@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe WikisController do
 
+  before (:each) do
+    @wiki = FactoryGirl.create(:wiki)
+  end
+
   describe "GET 'index'" do
     it "returns http success" do
       get 'index'
@@ -11,7 +15,7 @@ describe WikisController do
 
   describe "GET 'show'" do
     it "returns http success" do
-      get 'show'
+      get 'show', :id => @wiki.id
       response.should be_success
     end
   end
@@ -25,7 +29,7 @@ describe WikisController do
 
   describe "GET 'edit'" do
     it "returns http success" do
-      get 'edit'
+      get 'edit', :id => @wiki.id
       response.should be_success
     end
   end

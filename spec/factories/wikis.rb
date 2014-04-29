@@ -3,6 +3,6 @@
 FactoryGirl.define do
   factory :wiki do
     title "MyString"
-    body "MyText"
+    body "MyText that is twenty characters long"
   end
 end
