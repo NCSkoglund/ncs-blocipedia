@@ -13,6 +13,7 @@ describe Wiki do
   it "should create a new instance given valid attributes" do
      @attr = {
       :title => "12345",
+      :description => "67890",
       :body => "01234567890123456789",
     }
   Wiki.create!(@attr)
@@ -60,6 +61,15 @@ describe Wiki do
     @wiki.update_attribute(:title, "  x   x  ")
     @wiki.should be_valid
   end
+
+
+  it "should allow a description" do
+    @wiki.update_attribute(:description, "A new description")
+    @wiki.should be_valid
+    @wiki.update_attribute(:description, "")
+    @wiki.should be_valid
+  end
+
 
   it "should accept a body if at least twenty characters" do
     @wiki.update_attribute(:body, "01234567890123456789")

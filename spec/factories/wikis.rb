@@ -6,3 +6,9 @@ FactoryGirl.define do
     body "MyText that is twenty characters long"
   end
 end
+
+FactoryGirl.modify do
+  factory :wiki do 
+    description "MyDescription"
+  end
+end
