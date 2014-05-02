@@ -9,10 +9,20 @@
         <p>
           <%= wiki.description %>
         </p>
+        <small>
+          <% wiki.tags.each do |x| %>
+            <%= link_to x.tag, x %>
+          <% end %>
+        </small>
       </div>
     </div>
   <% end %>
 </div>
 <div class="col-md-4">
   <p>sidebar</p>
+  <small>
+    <% @tags.each do |x| %>
+      <%= link_to x.tag, x %><br/>
+    <% end %>
+  </small>
 </div>
