@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Wiki do
 
   before (:each) do
-    @wiki = FactoryGirl.create(:wiki)
+    @wiki = FactoryGirl.create(:wiki) 
   end
 
   it "should create a valid wiki" do
@@ -16,9 +16,10 @@ describe Wiki do
       :description => "67890",
       :body => "01234567890123456789",
     }
-  Wiki.create!(@attr)
+    Wiki.create!(@attr)
   end
 
+  #Testing validation by regular expression 
   it "should accept a title if at least five characters" do
     @wiki.update_attribute(:title, "xoxox")
     @wiki.should be_valid
@@ -87,7 +88,8 @@ describe Wiki do
     @wiki.update_attribute(:body, nil)
     @wiki.should_not be_valid
   end
-  
+
+
 
   # it "should be able to be set to public" do 
   #   @wiki.update_attribute(:public, true)
@@ -96,6 +98,7 @@ describe Wiki do
   # it "should be able to be set to private" do
   #   @wiki.update_attribute(:public, false)
   #   @wiki.public.should be_false
+  # " a tag is publicly visible as long as it has at least one public wiki"
   # end
 
 
@@ -131,9 +134,3 @@ describe Wiki do
   # end
 
 end
-
-# pending "it should have a category?"
-  # "should a wiki be able to have zero or multiple categories?"
-  # " a category is publicly visible as long as it has at least one public wiki"
-  #   it "category successful"
-  #   it "category unsuccessful"
