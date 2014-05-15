@@ -1,2 +1,10 @@
+<%= link_to 'Tags#Index', tags_path, class: 'btn btn-primary' %><br/>
 <h1>Tags#show</h1>
-<p>Find me in app/views/tags/show.html.erb</p>
+<h3><%= @tag.tag %></h3>
+<p>List of wikis associated with a tag</p>
+<small>
+  <% @wikis.each do |wiki| %>
+      <%= link_to wiki.title, wiki %><br/>
+  <% end %>
+</small>
+<hr/>

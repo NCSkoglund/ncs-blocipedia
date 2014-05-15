@@ -1,5 +1,7 @@
+<%= link_to 'Wikis#Index', wikis_path, class: 'btn btn-primary' %><br/>
 <h1><%= @wiki.title %></h1>
 <small>
+  <%= link_to 'Wikis#Edit', edit_wiki_path, class: 'btn btn-primary' %><br/>
   <%= @wiki.description %><br/>
   <%= p "This wiki has not been tagged" if @tags.count == 0 %>
   <% @tags.each do |x| %>
@@ -8,3 +10,10 @@
 </small>
 <hr/>
 <p><%= @wiki.body %></p>
+
+<%= link_to "Delete Wiki", @wiki, method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure you want to delete this wiki?' } %>
+<br />
+<br />
+
+
+

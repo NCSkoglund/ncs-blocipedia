@@ -1,5 +1,6 @@
 <div class="col-md-8">
   <h1>Wikis#Index</h1>
+  <%= link_to 'Wikis#New', new_wiki_path %>
   <% @wikis.each do |wiki| %>
     <div class="media">
       <div class="media-body">
@@ -19,7 +20,7 @@
   <% end %>
 </div>
 <div class="col-md-4">
-  <p>sidebar</p>
+  <p>All tags</p>
   <small>
     <% @tags.each do |x| %>
       <%= link_to x.tag, x %><br/>

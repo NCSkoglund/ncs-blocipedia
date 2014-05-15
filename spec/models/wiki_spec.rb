@@ -10,82 +10,80 @@ describe Wiki do
     @wiki.should be_valid
   end
 
-  it "should create a new instance given valid attributes" do
-     @attr = {
-      :title => "12345",
-      :description => "67890",
-      :body => "01234567890123456789",
-    }
-    Wiki.create!(@attr)
-  end
+
 
   #Testing validation by regular expression 
-  it "should accept a title if at least five characters" do
-    @wiki.update_attribute(:title, "xoxox")
-    @wiki.should be_valid
-    @wiki.update_attribute(:title, "x x0xsf lja.psj  fpasd?!jf plasjdf<l>  ")
-    @wiki.should be_valid
-    @wiki.update_attribute(:title, "'o' 1")
+  it "should accept a title if at least five characters including special characters" do
+    @wiki.title = "'o' 1"
     @wiki.should be_valid
   end
+
+  it "should accept a title greater than 5 characters" do  
+    @wiki.title = "x x0xsf lja.psj  fpasd?!jf plasjdf<l>  "
+    @wiki.should be_valid
+  end
+
   it "should reject a title if less than five characters" do
-      @wiki.update_attribute(:title, "xoxo")
-      @wiki.should_not be_valid
-      @wiki.update_attribute(:title, "o.x  ")
-      @wiki.should_not be_valid
-      @wiki.update_attribute(:title, "?")
-      @wiki.should_not be_valid
-      @wiki.update_attribute(:title, "")  
-      @wiki.should_not be_valid
-      @wiki.update_attribute(:title, nil)  
+      @wiki.title = "o.x  "
       @wiki.should_not be_valid
   end
-  it "should reject edge cases with surrounding whitespace" do
-     @wiki.update_attribute(:title, "x oo ")
-     @wiki.should_not be_valid
-     @wiki.update_attribute(:title, "    x")
-     @wiki.should_not be_valid
-     @wiki.update_attribute(:title, "xxxx ")
-     @wiki.should_not be_valid
-     @wiki.update_attribute(:title, "x    ")
-     @wiki.should_not be_valid
-     @wiki.update_attribute(:title, " xox ")
+
+  it "should reject a title if an empty string" do    
+      @wiki.title = ""  
+      @wiki.should_not be_valid
+  end
+  
+  it "should reject a title if nil" do    
+      @wiki.title = nil 
+      @wiki.should_not be_valid
+  end
+
+  it "should reject edge cases with following whitespace" do
+     @wiki.title = "x oo "
      @wiki.should_not be_valid
   end
+
+  it "should reject edge cases with preceding whitespace" do
+     @wiki.title = "    x"
+     @wiki.should_not be_valid
+  end
+
   it "should allow preceding and trailing whitespace as long as there are 5 valid characters" do
-    @wiki.update_attribute(:title, "x0x0x  ")
-    @wiki.should be_valid
-    @wiki.update_attribute(:title, "    x x0x  ")
-    @wiki.should be_valid
-    @wiki.update_attribute(:title, " x?!ox")
-    @wiki.should be_valid
-    @wiki.update_attribute(:title, "  x   x  ")
+    @wiki.title = "    x x0x  "
     @wiki.should be_valid
   end
+
 
 
   it "should allow a description" do
-    @wiki.update_attribute(:description, "A new description")
+    @wiki.description = "A new description"
     @wiki.should be_valid
-    @wiki.update_attribute(:description, "")
+  end
+
+  it "should allow a description to be optional" do
+    @wiki.description = ""
     @wiki.should be_valid
   end
 
 
-  it "should accept a body if at least twenty characters" do
-    @wiki.update_attribute(:body, "01234567890123456789")
-    @wiki.should be_valid
-    @wiki.update_attribute(:body, "0 abcde 89012 ?/ 789")
+
+  it "should accept a body if at least twenty characters including special characters" do
+    @wiki.body = "0 abcde 89012 ?/ 789"
     @wiki.should be_valid
   end
+
   it "should reject a body if less than twenty characters" do
-    @wiki.update_attribute(:body, "0123456789012345678")
+    @wiki.body = "0123456789012345678"
     @wiki.should_not be_valid
-    @wiki.update_attribute(:body, "0")
+  end
+
+  it "should reject a body if an empty string" do 
+    @wiki.body = ""
     @wiki.should_not be_valid
-    @wiki.update_attribute(:body, "")
-    @wiki.should_not be_valid
-    @wiki.update_attribute(:body, nil)
+  end
+
+  it "should reject a body if nil" do
+    @wiki.body = nil
     @wiki.should_not be_valid
   end
 
