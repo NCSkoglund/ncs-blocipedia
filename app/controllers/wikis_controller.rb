@@ -58,7 +58,7 @@ class WikisController < ApplicationController
     title = @wiki.title
 
     @wiki.tags.each do |t|   # this counts self.wiki.count as pre-destroy count.
-      t.terminator 
+      t.destroy
     end 
 
     if @wiki.destroy
