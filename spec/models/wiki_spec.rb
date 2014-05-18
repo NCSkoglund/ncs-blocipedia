@@ -11,7 +11,6 @@ describe Wiki do
   end
 
 
-
   #Testing validation by regular expression 
   it "should accept a title if at least five characters including special characters" do
     @wiki.title = "'o' 1"
@@ -126,9 +125,27 @@ describe Wiki do
   #   it "wiki created, last modified timestamp, edit wiki, new last modified timestamp"
 
 
-  # it "should be able to be removed"
-  #   @wiki.destroy
-  #   Wiki.all.should_not include(@wiki)
-  # end
+  it "should be able to be removed" do
+    @wiki.destroy
+    Wiki.all.should_not include(@wiki)
+  end
+
+  it "should remove itself from a tag's wikis upon deletion" do
+    @tag = @wiki.tags.first
+    @wiki2 = FactoryGirl.create(:wiki)
+    @tag.wikis << @wiki2
+    @tag.wikis.count.should == 2
+    @wiki.destroy
+    @tag.wikis.count.should ==1
+  end
+
+  it "should destroy a tag upon deletion if it is the only wiki belonging to that tag" do
+    @wiki2 = FactoryGirl.create(:wiki)
+    @wiki2.tags.count.should == 1
+    t = @wiki2.tags.first
+    t.wikis.count.should == 1
+    @wiki2.destroy
+    Tag.all.should_not include(t)
+  end
 
 end
