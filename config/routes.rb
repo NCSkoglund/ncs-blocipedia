@@ -3,5 +3,5 @@ NcsBlocipedia::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => "registrations"}
   resources :users
   resources :wikis
-  resources :tags
+  resources :tags, only: [:index, :show]
 end

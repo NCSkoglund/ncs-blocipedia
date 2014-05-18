@@ -1,2 +1,17 @@
 <h1>Tags#index</h1>
-<p>Find me in app/views/tags/index.html.erb</p>
+<div class="col-md-8">
+  <% @tags.each do |tag| %>
+    <div class="media">
+      <div class="media-body">
+        <p>
+          <%= tag.tag %>
+        </p>
+        <small>
+          <% tag.wikis.each do |wiki| %>
+            <%= link_to wiki.title, wiki %><br/>
+          <% end %>
+        </small>
+      </div>
+    </div>
+  <% end %>
+</div>
