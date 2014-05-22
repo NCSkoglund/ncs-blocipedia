@@ -1,6 +1,6 @@
 class Tag < ActiveRecord::Base
-  has_and_belongs_to_many :wikis, join_table: :wikis_tags
   before_destroy :terminator
+  has_and_belongs_to_many :wikis, join_table: :wikis_tags
 
   validates :tag, uniqueness: true 
   

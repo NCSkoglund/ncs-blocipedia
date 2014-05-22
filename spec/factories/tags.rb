@@ -8,7 +8,7 @@ end
 
 #prevent validation conflicts
 FactoryGirl.modify do
-  factory :tag do 
+  factory :tag do    
     sequence(:tag) { |n| "person#{n}@example.com" }
   end
 end

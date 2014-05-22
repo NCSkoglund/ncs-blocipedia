@@ -14,10 +14,18 @@ describe TagsController do
   end
 
   describe "GET 'show'" do
+    
     it "returns http success" do
       get 'show', :id => @tag.id
       response.should be_success
     end
+
+    it "finds the right tag" do
+      get :show, :id => @tag.id
+      assigns(:tag).should == @tag   
+    end
+    
   end
+
 
 end

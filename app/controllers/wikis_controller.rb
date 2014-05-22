@@ -6,6 +6,8 @@ class WikisController < ApplicationController
 
   def show
     @wiki = Wiki.find(params[:id])
+    # How to redirect to 404 if the wiki doesn't exist anymore?
+    #@wiki = { Wiki.find(params[:id]) ? render :show : redirect_to 'public/404.html' }
     @tags = @wiki.tags
   end
 
@@ -48,7 +50,7 @@ class WikisController < ApplicationController
     else
       flash[:error] = "There was an error updating the wiki.  Please try again."
       @tag = Tag.new
-      render :new
+      render :edit
     end
   end
 
