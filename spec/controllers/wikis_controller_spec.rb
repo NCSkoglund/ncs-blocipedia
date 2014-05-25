@@ -29,28 +29,44 @@ describe WikisController do
   end
 
   describe "GET 'show'" do
-    before (:each) do
-      get 'show', :id => @wiki.id
-    end
+    context "for a valid page" do
+      before (:each) do
+        @tag = FactoryGirl.create(:tag)
+        @wiki.tags << @tag
+        get 'show', :id => @wiki.id
+      end
 
-    it "returns http success" do
-      response.should be_success
-    end
+      it "returns http success" do
+        response.should be_success
+      end
 
-    it "renders the #show view" do
-      response.should render_template :show
-    end
+      it "renders the #show view" do
+        response.should render_template :show
+      end
 
-    it "assigns the requested wiki to @wiki" do  
-      assigns(:wiki).should == @wiki
+      it "assigns the requested wiki to @wiki" do  
+        assigns(:wiki).should == @wiki
+      end
+
+      it "assigns @tags to the wiki's tags" do
+        assigns(:tags).should == @wiki.tags
+      end
     end
     
-    ### unsure how to implement this
-    # it "redirects when wiki_id is not found" do
-    #   @invalid_id = Wiki.all.count + 10
-    #   Wiki.should_receive(:find).with(@invalid_id).and_raise(ActiveRecord::RecordNotFound)
-    # #  response.should render_template(:not_found)
-    # end    
+    context "for an invalid page" do
+      before (:each) do
+        get 'show', :id => 0
+      end
+
+      it "has 404 status when wiki_id is not found" do
+        response.status.should eq(404)
+      end 
+
+      it "renders 404 message when wiki_id is not found" do 
+        response.body.should eq("404 Not Found")
+      end
+    end  
+
   end
 
   describe "GET 'new'" do
@@ -69,79 +85,82 @@ describe WikisController do
     it "assigns a new Wiki to @wiki" do
       assigns(:wiki).should be_a_new(Wiki)
     end
+
+    it "assigns a new Tag to @tag" do
+      assigns(:tag).should be_a_new(Tag)
+    end
   end
 
   describe "POST 'create'" do
 
     context "with valid params" do
+      
       before (:each) do
         @attr = FactoryGirl.attributes_for(:wiki)
+        @tag = FactoryGirl.create(:tag)
+        post :create, wiki: @attr, tags: @tag
       end
 
-      it "creates and saves a new Wiki" do
+      it "adds one Wiki to the total Wiki count" do
         expect {
-          post :create, wiki: @attr       # pull this out into a lambda for DRYer code
+          post :create, wiki: @attr       
         }.to change(Wiki, :count).by(1)
       end
 
-      it "flashes a success message" do
-        post :create, :wiki => @attr
+      it "assigns a newly created Wiki as @wiki" do
+        expect(assigns(:wiki)).to be_a(Wiki)
+      end
+
+      it "persists the newly created Wiki" do
+        expect(assigns(:wiki)).to be_persisted 
+      end
+
+      it "flashes a success message upon save" do
         flash[:notice].should eq("Wiki was saved successfully.")
       end
 
       it "redirects to the new wiki" do
-        post :create, :wiki => @attr
         response.should redirect_to Wiki.last
       end
 
-      it "accepts tags and associates them with the new wiki" do
-        ### unsure how to write this
-        ### does this belong here?
-        # post :create, :wiki => @attr, :tags => [FactoryGirl.build(:tag)]
-        # expect(Wiki.last.tags).to include(assigns(:tags))
+      it "assigns the given tag to the wiki" do
+        Wiki.last.tags.first.should eq(@tag)
       end
- 
-      #does this make sense?
-      it "assigns the newly created wiki as @wiki" do
-        post :create, wiki: @attr 
-        expect(assigns(:wiki)).to be_a(Wiki)
-        expect(assigns(:wiki)).to be_persisted 
+
+      it "only sets the given number of tags in the wiki" do
+        Wiki.last.tags.length.should eq(1)
       end
     end
 
     context "with invalid params" do
       before (:each) do
         @attr = FactoryGirl.attributes_for(:wiki, :title => nil)
+        post :create, wiki: @attr
       end
 
-      it "does not save the new wiki" do 
-        ### this version doesn't work; why?
-        # post :create, wiki: @attr
-        # Wiki.all.should_not include(@wiki)
+      it "does not change the total Wiki count" do 
         expect{
           post :create, wiki: @attr
         }.to_not change(Wiki, :count)
       end
 
+      it "assigns the newly created Wiki as @wiki" do
+        expect(assigns(:wiki)).to be_a(Wiki)
+      end
+
+      it "does not persist the newly created Wiki" do
+        expect(assigns(:wiki)).to_not be_persisted  
+      end
+
       it "flashes an error message" do
-        post :create, wiki: @attr
         flash[:error].should eq("An error occurred in the create method, please try again.")
       end
 
       it "re-renders the 'new' template" do
-        post :create, wiki: @attr 
         response.should render_template(:new)
       end
 
-      #does this make sense?
-      it "assigns the newly created but unsaved wiki as @wiki" do
-        post :create, wiki: @attr 
-        expect(assigns(:wiki)).to be_a(Wiki)
-        expect(assigns(:wiki)).to_not be_persisted  
-      end
-
       it "resets @tag to a new tag object" do 
-        post :create, wiki: @attr 
         expect(assigns(:tag)).to be_a_new(Tag)
       end
     end
@@ -164,7 +183,7 @@ describe WikisController do
       assigns(:wiki).should == @wiki
     end
 
-    it "displays the given wiki's tags" do
+    it "assigns the given wiki's tags to @tags" do
       assigns(:tags).should == @wiki.tags
     end
  
@@ -177,25 +196,27 @@ describe WikisController do
   describe "PUT 'update'" do
 
     context "with valid params" do
+
       before (:each) do
-        @attr = FactoryGirl.attributes_for(:wiki)
-        put :update, id: @wiki, wiki: @attr
+        @previous_tag = @wiki.tags.last
+        @wiki.tags.count.should eq(1)
+
+        @new_attr = FactoryGirl.attributes_for(:wiki, :title => 'xoxox')
+        put :update, id: @wiki, wiki: @new_attr, tags: @previous_tag
+        @wiki.reload
       end
 
       it "locates the requested wiki" do
         assigns(:wiki).should eq(@wiki)
       end
 
-      it "changes @wiki's attributes" do
-        put :update, id: @wiki, wiki: FactoryGirl.attributes_for(:wiki, :title => 'xoxox')
-        @wiki.reload
+      it "assigns new attributes to @wiki" do
         @wiki.title.should eq("xoxox")
-        @wiki.title.should_not eq("MyString")
       end
 
-      # it "updates the wiki's tags" do 
-      #   #     revisit
-      # end
+      it "removes old attributes from @wiki" do
+        @wiki.title.should_not eq("MyString")
+      end
 
       it "redirects to the updated wiki" do 
         response.should redirect_to @wiki
@@ -204,30 +225,66 @@ describe WikisController do
       it "flashes a success message if saved" do
         flash[:notice].should eq("Wiki was updated.")
       end
+      
+      describe "updates tags associations with valid data" do
+        
+        before (:each) do
+          @wiki.tags.last.should eq(@previous_tag)
+          @wiki.tags.count.should eq(1)
+          
+          @new_tag = FactoryGirl.create(:tag)
+          put :update, id: @wiki, wiki: @new_attr, tags: @new_tag
+          @wiki.reload
+        end
 
+        it "removes preexisting tags" do 
+          @wiki.tags.should_not include(@previous_tag)
+        end
+
+        it "assigns new tags" do
+          @wiki.tags.first.should eq(@new_tag)
+        end
+
+        it "assigns the given quantity of new tags" do
+          @wiki.tags.count.should eq(1)
+        end
+
+        it "can assign multiple tags" do
+          put :update, id: @wiki, wiki: @new_attr, tags: [@new_tag, @previous_tag]
+          @wiki.reload
+          @wiki.tags.count.should eq(2)
+        end
+
+        it "can assign zero tags" do
+          put :update, id: @wiki, wiki: @new_attr
+          @wiki.reload
+          @wiki.tags.count.should eq(0)
+        end
+      end
     end
 
     context "with invalid params" do
       before (:each) do
-        @attr = FactoryGirl.attributes_for(:wiki, :title => nil)
-        put :update, id: @wiki, wiki: @attr
+        @previous_tag = @wiki.tags.last
+        @wiki.tags.count.should eq(1)
+
+        @new_attr = FactoryGirl.attributes_for(:wiki, :title => 'xox')
+        put :update, id: @wiki, wiki: @new_attr
+        @wiki.reload
       end
 
       it "locates the requested wiki" do
         assigns(:wiki).should eq(@wiki)
       end
       
-      it "does not change the wiki's attributes" do
-        put :update, id: @wiki, wiki: FactoryGirl.attributes_for(:wiki, :title => 'xox')
-        @wiki.reload
+      it "does not assign the new attributes" do
         @wiki.title.should_not eq("xox")
+      end
+
+      it "does not overwrite the preexisting attributes" do
         @wiki.title.should eq("MyString")
       end
 
-      # it "does not change the wiki's tags" do
-      #   #revisit
-      # end
- 
       it "renders the edit template" do
         response.should render_template(:edit)
       end
@@ -235,27 +292,71 @@ describe WikisController do
       it "flashes an error message" do
         flash[:error].should eq("There was an error updating the wiki.  Please try again.")
       end
+
+      describe "does not update tag associations with invalid data" do
+
+        it "does not overwrite the preexisting tags" do
+          @wiki.tags.first.should eq(@previous_tag)
+        end
+
+        it "does not change the number of tags" do
+          @wiki.tags.count.should eq(1)
+        end 
+      end
     end
   end
  
   describe "DELETE 'destroy'" do
-    before (:each) do
-      delete :destroy, id: @wiki 
+
+    describe "destroy wiki object" do 
+      before (:each) do
+        # @tag = @wiki.tags.first
+        # @wiki.tags.count.should eq(1)
+        # @tag.wikis.count.should eq(1)
+        delete :destroy, id: @wiki 
+      end
+
+      it "deletes the wiki" do
+        Wiki.all.should_not include(@wiki)
+      end
+
+      it "redirects to wikis#index" do
+        response.should redirect_to wikis_path
+      end
+
+      it "removes one Wiki from the total Wiki count" do
+        # test removal of a different wiki to avoid testing conflict
+        @attr = FactoryGirl.create(:wiki)
+        expect {
+          delete :destroy, id: @attr      
+        }.to change(Wiki, :count).by(-1)
+      end
     end
 
-    it "deletes the wiki" do
-      Wiki.all.should_not include(@wiki)
-    end
+    describe "destroy appropriate associated tags" do
+      before (:each) do
+        #create a tag with one wiki and another with two wikis
+       
+        @one_wiki_tag = @wiki.tags.first
+        @second_wiki = FactoryGirl.create(:wiki)
+        @two_wiki_tag = @second_wiki.tags.first
+        @wiki.tags << @two_wiki_tag
 
-    it "redirects to wikis#index" do
-      response.should redirect_to wikis_path
-    end
+        @wiki.tags.count.should eq(2)
+        @one_wiki_tag.wikis.count.should eq(1)
+        @two_wiki_tag.wikis.count.should eq(2)
 
-    it "calls destroy on its associated tags when destroyed" do
-      #this passes, but does it actually test whether destroy is being called on the tags?
-      @wiki.tags.should respond_to(:destroy)
-    end
+        delete :destroy, id: @wiki 
+      end
 
+      it "calls destroy on its associated tags when destroyed" do
+        Tag.all.should_not include(@one_wiki_tag)
+      end
+
+      it "does not destroy associated tags that still belong to another wiki" do
+        Tag.all.should include(@two_wiki_tag)
+      end
+    end
   end
 
 end

@@ -6,9 +6,9 @@ class Tag < ActiveRecord::Base
   
   private
 
-  #if a tag has no wikis belonging to it, destroy the tag. 
+  #if a tag has only one parent wiki, destroy the tag when its parent wiki is destroyed. 
   def terminator
-    if self.wikis.count != 1
+    if self.wikis.count > 1  # changed from '!= 1'
       false
     end
   end

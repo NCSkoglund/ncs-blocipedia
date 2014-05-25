@@ -1,4 +1,6 @@
 class WikisController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+
   def index
     @wikis = Wiki.all
     @tags = Tag.all
@@ -6,8 +8,6 @@ class WikisController < ApplicationController
 
   def show
     @wiki = Wiki.find(params[:id])
-    # How to redirect to 404 if the wiki doesn't exist anymore?
-    #@wiki = { Wiki.find(params[:id]) ? render :show : redirect_to 'public/404.html' }
     @tags = @wiki.tags
   end
 
@@ -39,26 +39,25 @@ class WikisController < ApplicationController
 
   def update
     @wiki = Wiki.find(params[:id])
-   
     @tags = Tag.where(:id => params[:tags])
-    @wiki.tags.destroy_all #disassociate the already added tags
-    @wiki.tags << @tags  # associate the selected tags to the wiki and create records in the join table.
-    
+  
     if @wiki.update_attributes(wiki_params)
+      @wiki.tags.destroy_all #only disassociate previous tags if the wiki form contains no errors
+      @wiki.tags << @tags  # associate the selected tags to the wiki and create records in the join table.
       flash[:notice] = "Wiki was updated."
       redirect_to @wiki
     else
       flash[:error] = "There was an error updating the wiki.  Please try again."
-      @tag = Tag.new
+      @tag = Tag.new #reset the custom tag field if an error occurs
       render :edit
     end
   end
 
   def destroy
-    # a tag should be automatically destroyed when it has no more wikis to belong to
     @wiki = Wiki.find(params[:id])
     title = @wiki.title
 
+    # a tag should be automatically destroyed when it has no more wikis to belong to
     @wiki.tags.each do |t|   # this counts self.wiki.count as pre-destroy count.
       t.destroy
     end 
