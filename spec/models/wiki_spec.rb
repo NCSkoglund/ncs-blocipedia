@@ -6,88 +6,105 @@ describe Wiki do
     @wiki = FactoryGirl.create(:wiki) 
   end
 
-  it "should create a valid wiki" do
+  it "creates a valid wiki" do
     @wiki.should be_valid
   end
 
+  describe "testing validations by regular expression" do 
 
+    it "accepts a title if at least five characters including special characters" do
+      @wiki.title = "'o' 1"
+      @wiki.should be_valid
+    end
 
-  #Testing validation by regular expression 
-  it "should accept a title if at least five characters including special characters" do
-    @wiki.title = "'o' 1"
-    @wiki.should be_valid
-  end
+    it "accepts a title greater than 5 characters" do  
+      @wiki.title = "x x0xsf lja.psj  fpasd?!jf plasjdf<l>  "
+      @wiki.should be_valid
+    end
 
-  it "should accept a title greater than 5 characters" do  
-    @wiki.title = "x x0xsf lja.psj  fpasd?!jf plasjdf<l>  "
-    @wiki.should be_valid
-  end
+    it "rejects a title if less than five characters" do
+        @wiki.title = "o.x  "
+        @wiki.should_not be_valid
+    end
 
-  it "should reject a title if less than five characters" do
-      @wiki.title = "o.x  "
+    it "rejects a title if an empty string" do    
+        @wiki.title = ""  
+        @wiki.should_not be_valid
+    end
+    
+    it "rejects a title if nil" do    
+        @wiki.title = nil 
+        @wiki.should_not be_valid
+    end
+
+    it "rejects edge cases with following whitespace" do
+       @wiki.title = "x oo "
+       @wiki.should_not be_valid
+    end
+
+    it "rejects edge cases with preceding whitespace" do
+       @wiki.title = "    x"
+       @wiki.should_not be_valid
+    end
+
+    it "allows preceding and trailing whitespace as long as there are 5 valid characters" do
+      @wiki.title = "    x x0x  "
+      @wiki.should be_valid
+    end
+
+    it "allows a description" do
+      @wiki.description = "A new description"
+      @wiki.should be_valid
+    end
+
+    it "allows a description to be optional" do
+      @wiki.description = ""
+      @wiki.should be_valid
+    end
+
+    it "accepts a body if at least twenty characters including special characters" do
+      @wiki.body = "0 abcde 89012 ?/ 789"
+      @wiki.should be_valid
+    end
+
+    it "rejects a body if less than twenty characters" do
+      @wiki.body = "0123456789012345678"
       @wiki.should_not be_valid
-  end
+    end
 
-  it "should reject a title if an empty string" do    
-      @wiki.title = ""  
+    it "rejects a body if an empty string" do 
+      @wiki.body = ""
       @wiki.should_not be_valid
-  end
-  
-  it "should reject a title if nil" do    
-      @wiki.title = nil 
+    end
+
+    it "rejects a body if nil" do
+      @wiki.body = nil
       @wiki.should_not be_valid
+    end
   end
 
-  it "should reject edge cases with following whitespace" do
-     @wiki.title = "x oo "
-     @wiki.should_not be_valid
+  describe "wiki-tag associations" do 
+    before (:each) do
+      @tag1 = FactoryGirl.create(:tag)
+    end
+
+    it "handles a wiki with one tag" do
+      @wiki.tags.count.should eq(1)
+      @wiki.should be_valid
+    end
+
+    it "handles a wiki with multiple tags" do
+      @wiki.tags << @tag1
+      @wiki.tags.count.should eq(2)
+      @wiki.should be_valid
+    end
+
+    it "handles a wiki with no tags" do
+      @wiki.tags.destroy_all
+      @wiki.tags.count.should eq(0)
+      @wiki.should be_valid
+    end 
   end
-
-  it "should reject edge cases with preceding whitespace" do
-     @wiki.title = "    x"
-     @wiki.should_not be_valid
-  end
-
-  it "should allow preceding and trailing whitespace as long as there are 5 valid characters" do
-    @wiki.title = "    x x0x  "
-    @wiki.should be_valid
-  end
-
-
-
-  it "should allow a description" do
-    @wiki.description = "A new description"
-    @wiki.should be_valid
-  end
-
-  it "should allow a description to be optional" do
-    @wiki.description = ""
-    @wiki.should be_valid
-  end
-
-
-
-  it "should accept a body if at least twenty characters including special characters" do
-    @wiki.body = "0 abcde 89012 ?/ 789"
-    @wiki.should be_valid
-  end
-
-  it "should reject a body if less than twenty characters" do
-    @wiki.body = "0123456789012345678"
-    @wiki.should_not be_valid
-  end
-
-  it "should reject a body if an empty string" do 
-    @wiki.body = ""
-    @wiki.should_not be_valid
-  end
-
-  it "should reject a body if nil" do
-    @wiki.body = nil
-    @wiki.should_not be_valid
-  end
-
-
 
   # it "should be able to be set to public" do 
   #   @wiki.update_attribute(:public, true)
@@ -124,11 +141,4 @@ describe Wiki do
 
   # pending "it should show the timestamp of its last update"
   #   it "wiki created, last modified timestamp, edit wiki, new last modified timestamp"
-
-
-  # it "should be able to be removed"
-  #   @wiki.destroy
-  #   Wiki.all.should_not include(@wiki)
-  # end
-
 end

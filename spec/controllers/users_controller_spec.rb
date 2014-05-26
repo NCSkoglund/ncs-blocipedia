@@ -7,6 +7,13 @@ describe UsersController do
     sign_in @user
   end
 
+  describe "GET 'index'" do
+    it "returns http success" do
+      get :index
+      response.should be_success
+    end
+  end
+
   describe "GET 'show'" do
     
     it "should be successful" do
@@ -14,7 +21,7 @@ describe UsersController do
       response.should be_success
     end
     
-    it "should find the right user" do
+    it "finds the right user" do
       get :show, :id => @user.id
       assigns(:user).should == @user
     end

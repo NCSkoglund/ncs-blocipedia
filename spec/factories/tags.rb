@@ -3,6 +3,12 @@
 FactoryGirl.define do
   factory :tag do
     tag "MyString"
-    #wiki 
+  end
+end
+
+#prevent validation conflicts
+FactoryGirl.modify do
+  factory :tag do    
+    sequence(:tag) { |n| "person#{n}@example.com" }
   end
 end

@@ -10,5 +10,8 @@ end
 FactoryGirl.modify do
   factory :wiki do 
     description "MyDescription"
+
+    #automatically create an associated tag
+    tags { |a| [a.association(:tag)] }
   end
 end
