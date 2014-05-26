@@ -1,5 +1,4 @@
 class TagsController < ApplicationController
-  rescue_from ActiveRecord::RecordNotFound, with: :not_found 
 
   def index
     @wikis = Wiki.all
