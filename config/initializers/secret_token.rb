@@ -9,4 +9,4 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-NcsBlocipedia::Application.config.secret_key_base = '266c4034841e846bcec728a701c86e5b52d6db9a78c6387a807d7a5f4f4ea1b4c4347978d5a817097e064f4a2cd97efb8e52ec807a40b8a7073887a0cbeb53fc'
+NcsBlocipedia::Application.config.secret_key_base = ENV["SECRET_KEY_BASE"]
