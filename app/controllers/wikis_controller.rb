@@ -1,18 +1,31 @@
 class WikisController < ApplicationController
 
   def index
-    @wikis = Wiki.all
+     # scope for guest users
+    current_user ? @wikis = Wiki.visible_to(current_user) : @wikis = Wiki.where(private: false )
+
     @tags = Tag.all
+    # for privacy scoping regarding tags and public/private wikis
+    # QUESTION: can this logic be moved into model to keep controller skinny?
+    @public_tags = []
+    @wikis.each do |w|
+      w.tags.each do |t|
+        @public_tags << t
+      end
+    end
+    authorize @wikis
   end
 
   def show
     @wiki = Wiki.find(params[:id])
     @tags = @wiki.tags
+    authorize @wiki
   end
 
   def new
     @wiki = Wiki.new
     @tag = Tag.new
+    authorize @wiki
   end
 
   def create 
@@ -20,7 +33,8 @@ class WikisController < ApplicationController
 
     @tags = Tag.where(:id => params[:tags])  # Allow preexisting tags to be associated with the wiki from select box
     @wiki.tags << @tags # associate the selected tags to the wiki and create records in the join table.
-
+    
+    authorize @wiki
     if @wiki.save
       redirect_to @wiki, notice: "Wiki was saved successfully."
     else
@@ -34,13 +48,24 @@ class WikisController < ApplicationController
     @wiki = Wiki.find(params[:id])
     @tags = @wiki.tags
     @tag = Tag.new
+    authorize @wiki
   end
 
   def update
     @wiki = Wiki.find(params[:id])
     @tags = Tag.where(:id => params[:tags])
-  
+    @tag_count = Tag.all.count 
+
+    authorize @wiki
     if @wiki.update_attributes(wiki_params)
+      #newly written tags are created after the save but before the following destroy_all
+      #if a new custom tag was created, manually add it to the @tags array
+      @new_tag_count = Tag.all.count
+      if @new_tag_count > @tag_count
+        @tag = Tag.last  
+        @tags << @tag
+      end
+
       @wiki.tags.destroy_all #only disassociate previous tags if the wiki form contains no errors
       @wiki.tags << @tags  # associate the selected tags to the wiki and create records in the join table.
       flash[:notice] = "Wiki was updated."
@@ -61,6 +86,7 @@ class WikisController < ApplicationController
       t.destroy
     end 
 
+    authorize @wiki
     if @wiki.destroy
       redirect_to wikis_path, notice: "\"#{title}\" was deleted successfully."
     else 
@@ -72,7 +98,7 @@ class WikisController < ApplicationController
   private
 
   def wiki_params
-    params.require(:wiki).permit(:title, :description, :body, tags_attributes: [:id, :tag])
+    params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag])
   end
 
 end

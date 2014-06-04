@@ -1,17 +1,13 @@
 <%# add navigation links to this file %>
 <% if user_signed_in? %>
 
-  <%= Time.current %>
+  <li style="color:#fff;"><%= Time.current %></li><br/>
+  
   <% if Time.current.seconds_since_midnight > 64800 %> <!-- after 6pm -->
-    <li style="color:#fff;"><%= Time.current.seconds_since_midnight %></li>
     <li><%= link_to "Good evening #{current_user.name}!", current_user %></li>
-
   <% elsif Time.current.seconds_since_midnight < 43200 %>  <!-- before noon -->
-    <li style="color:#fff;"><%= Time.current.seconds_since_midnight %></li>
     <li><%= link_to "Good morning #{current_user.name}!", current_user %></li>
-
   <% else %>
-    <li style="color:#fff;"><%= Time.current.seconds_since_midnight %></li>
     <li><%= link_to "Good day #{current_user.name}!", current_user %></li>
   <% end %>
 
