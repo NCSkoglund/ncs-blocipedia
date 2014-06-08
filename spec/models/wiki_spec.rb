@@ -83,6 +83,29 @@ describe Wiki do
     end
   end
 
+  describe "public-private settings" do
+
+    it "can be set to private" do 
+      @wiki.update_attribute(:private, 1)
+      @wiki.private.should be_true
+    end
+
+    it "can be set to public" do
+      @wiki.update_attribute(:private, 0)
+      @wiki.private.should be_false
+    end
+
+    it "rejects an empty private field" do
+      @wiki.private = ""
+      @wiki.should_not be_valid
+    end
+
+    it "rejects a nil private field" do
+      @wiki.private = nil
+      @wiki.should_not be_valid
+    end
+  end
+
   describe "wiki-tag associations" do 
     before (:each) do
       @tag1 = FactoryGirl.create(:tag)
@@ -105,17 +128,6 @@ describe Wiki do
       @wiki.should be_valid
     end 
   end
-
-  # it "should be able to be set to public" do 
-  #   @wiki.update_attribute(:public, true)
-  #   @wiki.public.should be_true
-  # end
-  # it "should be able to be set to private" do
-  #   @wiki.update_attribute(:public, false)
-  #   @wiki.public.should be_false
-  # " a tag is publicly visible as long as it has at least one public wiki"
-  # end
-
 
   # pending "if private, it should have collaborators/contributor"
       # "collaborator:  an object matching a user_id with a wiki_id"

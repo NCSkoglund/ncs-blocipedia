@@ -10,3 +10,9 @@ FactoryGirl.define do
     confirmed_at Time.now
   end
 end
+
+FactoryGirl.modify do
+  factory :user do    
+    level "basic"
+  end
+end

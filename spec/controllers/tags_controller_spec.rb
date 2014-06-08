@@ -6,6 +6,9 @@ describe TagsController do
     @tag = FactoryGirl.create(:tag)
     @wiki = FactoryGirl.create(:wiki)
     @tag.wikis << @wiki
+    # create a basic user
+    @user = FactoryGirl.create(:user)
+    sign_in @user
   end
 
   describe "GET 'index'" do
@@ -20,13 +23,9 @@ describe TagsController do
     it "renders the :index view" do
       response.should render_template :index
     end
-
-    it "populates an array of wikis" do
-      assigns(:wikis).should eq(Wiki.all)
-    end
     
     it "populates an array of tags" do
-      assigns(:tags).should eq(Tag.all)
+      assigns(:tags).should eq(Tag.visible_to(@user).uniq)
     end
   end
 
@@ -64,4 +63,34 @@ describe TagsController do
       end
     end     
   end
+
+##################  Where should these be located?  Actions grouped by user type within controllers.
+  
+  #   Guest User:
+#Tags controller
+# -I can see a list of all tags that contain public wikis on tags#index
+# -I can see the public wikis associated with those tags, but not private
+# -I can access a Tags#show screen 
+# " a tag is publicly visible as long as it has at least one public wiki"
+  # end=
+
+# _____
+#basic user
+# -TAG:CULL TAKES A LONG TIME
+# -I can see tags scoped for privacy
+# -I cannot navigate to a tag#show if it has no public wikis associated
+
+# _____
+#premium
+# -TAG:CULL TAKES A LONG TIME
+# -I can see all tags
+# -I can navigate to tags#show and see all associated wikis
+
+# _____
+#admin
+# -TAG:CULL TAKES A LONG TIME
+# -I can see all tags
+# -I can navigate to tags#show and see all associated wikis
+
+
 end

@@ -3,7 +3,10 @@ require 'spec_helper'
 describe WikisController do
 
   before (:each) do
-   @wiki = FactoryGirl.create(:wiki)
+    @wiki = FactoryGirl.create(:wiki)
+    # create a basic user
+    @user = FactoryGirl.create(:user)
+    sign_in @user
   end
 
   describe "GET 'index'" do
@@ -20,7 +23,7 @@ describe WikisController do
     end
 
     it "populates an array of wikis" do
-      assigns(:wikis).should eq(Wiki.all)
+      assigns(:wikis).should eq(Wiki.visible_to(@user))
     end
     
     it "populates an array of tags" do
@@ -120,15 +123,16 @@ describe WikisController do
       end
 
       it "redirects to the new wiki" do
-        response.should redirect_to Wiki.last
+        # the newest wiki is added to the front of the collection, not the end
+        response.should redirect_to Wiki.first
       end
-
+      
       it "assigns the given tag to the wiki" do
-        Wiki.last.tags.first.should eq(@tag)
+        Wiki.first.tags.first.should eq(@tag)
       end
-
+      
       it "only sets the given number of tags in the wiki" do
-        Wiki.last.tags.length.should eq(1)
+        Wiki.first.tags.length.should eq(1)
       end
     end
 
@@ -310,9 +314,6 @@ describe WikisController do
 
     describe "destroy wiki object" do 
       before (:each) do
-        # @tag = @wiki.tags.first
-        # @wiki.tags.count.should eq(1)
-        # @tag.wikis.count.should eq(1)
         delete :destroy, id: @wiki 
       end
 
@@ -358,5 +359,62 @@ describe WikisController do
       end
     end
   end
+
+##################  Where should these be located?  Actions grouped by user type within controllers.
+  
+  #Guest user permissions
+  # Wikis controller
+# Rescue from Pundit :user_not_authorized  —> this should fit into user type testing
+# -I can see an index of wikis that are set to private: false
+# -I cannot see a private wiki through direct navigation 
+# -I can see a public wiki 
+# -I cannot edit a public wiki 
+# -I cannot edit a private wiki
+# -I cannot delete a public wiki 
+# -I cannot delete a private wiki
+# -I cannot navigate to the new wiki form
+# -I can see a list of tags containing public wikis on the side of wikis#index
+
+# As a Basic User:
+# -It displays Wikis#index upon sign in
+# -I can see an index of wikis that are set to private: false
+# -I can see the New Wiki link from Wikis#Index
+# -I can see the New Wiki form without the private checkbox
+# -I can create a new public wiki, add preexisting tags and create one new tag
+# -I cannot view a private wiki 
+# -I can see the edit wiki link inside of Wiki#Show
+# -I can see the edit wiki form for a public wiki without the private checkbox
+# -I can edit a public wikis fields and tags
+# -I can see the delete Wiki button from Wiki#Show
+# -I can delete a public wiki
+
+# PREMIUM USER
+# -It displays Wikis#index upon sign in
+# -I can see an index of all wikis
+# -I can see the New Wiki link from Wikis#Index
+# -I can see the New Wiki form with the private checkbox
+# -I can create a new private wiki, add preexisting tags and create one new tag
+# -I can view a private wiki 
+# -I can see the edit wiki link inside of Wiki#Show
+# -I can see the edit wiki form for a private wiki with the private checkbox
+# -I can edit a private wikis fields and tags
+# -I can see the delete Wiki button from Wiki#Show
+# -I can delete a private wiki
+
+# ADMIN USER’
+# -It displays Wikis#index upon sign in
+# -I can see an index of all wikis
+# -I can see the New Wiki link from Wikis#Index
+# -I can see the New Wiki form with the private checkbox
+# -I can create a new private wiki, add preexisting tags and create one new tag
+# -I can view a private wiki 
+# -I can see the edit wiki link inside of Wiki#Show
+# -I can see the edit wiki form for a private wiki with the private checkbox
+# -I can edit a private wikis fields and tags
+# -I can see the delete Wiki button from Wiki#Show
+# -I can delete a private wiki
+
+
+
 
 end

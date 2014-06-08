@@ -7,11 +7,10 @@ describe User do
       :name => "Example User",
       :email => "user@example.com",
       :password => "changeme",
-      :password_confirmation => "changeme"
+      :password_confirmation => "changeme",
+      :level => "basic"
     }
   end
-
-  # it "is a pending test for free vs. premium user" 
 
   it "should require a name" do
     no_name_user = User.new(@attr.merge(:name => ""))
@@ -54,6 +53,16 @@ describe User do
     User.create!(@attr.merge(:email => upcased_email))
     user_with_duplicate_email = User.new(@attr)
     user_with_duplicate_email.should_not be_valid
+  end
+
+  it "should require a membership level" do
+    no_level_user = User.new(@attr.merge(:level => ""))
+    no_level_user.should_not be_valid 
+  end
+
+  it "should recognize a user's membership level" do 
+    @user = User.create(@attr)
+    @user.level?(:basic).should be_true
   end
 
   describe "passwords" do
@@ -104,7 +113,5 @@ describe User do
     it "should set the encrypted password attribute" do
       @user.encrypted_password.should_not be_blank
     end
-
   end
-
 end
