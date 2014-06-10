@@ -11,7 +11,7 @@ class Tag < ActiveRecord::Base
 
   def terminator
     #if a tag has only one parent wiki, destroy the tag when its parent wiki is destroyed. 
-    if self.wikis.count > 1  # changed from '!= 1'
+    if self.wikis.count > 1  
       false
     end
   end
@@ -21,6 +21,7 @@ class Tag < ActiveRecord::Base
     # written so as to run periodically without a cron event
     # QUESTION:  This took too long when there are a lot of tags to cull
     # Move to after_save for more frequent usage?
+    # This is creating an after_destroy loop!
     Tag.all.each do |t|
       if t.wikis.count == 0 
         t.destroy

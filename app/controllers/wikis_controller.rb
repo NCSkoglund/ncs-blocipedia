@@ -25,6 +25,7 @@ class WikisController < ApplicationController
   def new
     @wiki = Wiki.new
     @tag = Tag.new
+    @wiki.users.build
     authorize @wiki
   end
 
@@ -33,7 +34,12 @@ class WikisController < ApplicationController
 
     @tags = Tag.where(:id => params[:tags])  # Allow preexisting tags to be associated with the wiki from select box
     @wiki.tags << @tags # associate the selected tags to the wiki and create records in the join table.
-    
+
+    @wiki.owner = current_user
+   
+    @users = User.where(:id => params[:users])
+    @wiki.users << @users
+
     authorize @wiki
     if @wiki.save
       redirect_to @wiki, notice: "Wiki was saved successfully."
@@ -53,11 +59,17 @@ class WikisController < ApplicationController
 
   def update
     @wiki = Wiki.find(params[:id])
+    @users = User.where(:id => params[:users])
     @tags = Tag.where(:id => params[:tags])
     @tag_count = Tag.all.count 
 
     authorize @wiki
     if @wiki.update_attributes(wiki_params)
+
+      #pull this out into an add/remove one at a time scenario, or a comma separated list?
+      @wiki.users.destroy_all
+      @wiki.users << @users
+
       #newly written tags are created after the save but before the following destroy_all
       #if a new custom tag was created, manually add it to the @tags array
       @new_tag_count = Tag.all.count
@@ -65,9 +77,9 @@ class WikisController < ApplicationController
         @tag = Tag.last  
         @tags << @tag
       end
-
       @wiki.tags.destroy_all #only disassociate previous tags if the wiki form contains no errors
       @wiki.tags << @tags  # associate the selected tags to the wiki and create records in the join table.
+
       flash[:notice] = "Wiki was updated."
       redirect_to @wiki
     else

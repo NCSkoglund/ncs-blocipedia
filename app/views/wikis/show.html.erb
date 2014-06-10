@@ -18,6 +18,15 @@
 <% end %>
 <br />
 <br />
+<p>Owner:</p>
+<%= link_to @wiki.owner.email, @wiki.owner %>
+<br/>
+<br/>
+<p>Users:</p>
+<% @wiki.users.each do |w| %>
+  <%= link_to w.email, w %><br/>
+<% end %>
+
 
 
 

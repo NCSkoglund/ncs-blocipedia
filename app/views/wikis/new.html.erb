@@ -41,6 +41,11 @@
             <%= f.check_box :private %> Private Wiki 
           <% end %>
         </div>
+       
+        <!--I don't need fields_for to create the HABTM association --> 
+        <!-- leave as select for now; change manner of selection later -->
+        <%= select_tag :users, options_from_collection_for_select(User.all, 'id', 'email', @wiki.users.map{ |j| j.id }), :multiple => true %>
+    
       <% end %>
       <div class="form-group">
         <%= f.label "Select One or More Tags" %><br/>
