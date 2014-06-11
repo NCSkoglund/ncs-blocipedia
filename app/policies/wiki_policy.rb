@@ -1,17 +1,32 @@
 class WikiPolicy < ApplicationPolicy
 
   def index?
-    true
+     #individual record scoping occurs in wikis_controller.rb
+     true
   end
 
   def show?
-    if user && user.present? && (user.level?(:premium) || user.level?(:admin))
-        true
+    if record.private == false
+      true
+    elsif user.present? && user.level?(:admin)
+      true
+    elsif user.present? && (user.level?(:premium) && (record.users.include?(user) || record.owner == user))
+      true 
     else
-      record.private == false
+      false
     end
-    #QUESTION:  the `scope` in this line always throws an error :(
-    #scope.where(:id => record.id).exists?  
+  end
+
+  def update?
+    if user.present? && record.private == false
+      true
+    elsif user.present? && (user.level?(:premium) && (record.users.include?(user) || record.owner == user))
+      true 
+    elsif user.present? && user.level?(:admin)
+      true
+    else
+      false
+    end
   end
 
 end

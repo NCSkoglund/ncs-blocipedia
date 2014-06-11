@@ -1,16 +1,32 @@
 class WikisController < ApplicationController
 
   def index
-     # scope for guest users
-    current_user ? @wikis = Wiki.visible_to(current_user) : @wikis = Wiki.where(private: false )
+  
+    @wikis = Wiki.all 
+    # Privacy scoping regarding owners and collaborators of private wikis
+    # this necessitates the addition of array_policy.rb 
+    if current_user && current_user.level?(:admin)
+      @wikis = Wiki.all
+    elsif current_user && current_user.level?(:premium) 
+      @visible_wikis = []
+      @wikis.each do |w|
+        if ( w.users.include?(current_user) || w.owner == current_user ) 
+          @visible_wikis << w 
+        end
+      end
+      @wikis = @visible_wikis
+    else 
+      # Privacy scoping for guest users & basic users
+      @wikis = Wiki.where(private: false)
+    end
 
     @tags = Tag.all
     # for privacy scoping regarding tags and public/private wikis
-    # QUESTION: can this logic be moved into model to keep controller skinny?
-    @public_tags = []
+    # this runs on @wikis after user-privacy scoping has been performed
+    @visible_tags = []
     @wikis.each do |w|
       w.tags.each do |t|
-        @public_tags << t
+        @visible_tags << t
       end
     end
     authorize @wikis
@@ -25,7 +41,6 @@ class WikisController < ApplicationController
   def new
     @wiki = Wiki.new
     @tag = Tag.new
-    @wiki.users.build
     authorize @wiki
   end
 
@@ -66,7 +81,7 @@ class WikisController < ApplicationController
     authorize @wiki
     if @wiki.update_attributes(wiki_params)
 
-      #pull this out into an add/remove one at a time scenario, or a comma separated list?
+      #TO DO: pull this out into an add/remove one at a time scenario, or a comma separated list?
       @wiki.users.destroy_all
       @wiki.users << @users
 
@@ -108,7 +123,7 @@ class WikisController < ApplicationController
   end
 
   private
-
+  # `tags_attributes` is necessary for the creation of a tag through a wiki form, but not the association of a user
   def wiki_params
     params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag])
   end

@@ -1,9 +1,7 @@
 class Tag < ActiveRecord::Base
   before_destroy :terminator
-  after_destroy :cull
+  #after_save :cull  # this obliterates itself as an after-save callback
   has_and_belongs_to_many :wikis, join_table: :wikis_tags
-
-  scope :visible_to, ->(user) { (user.level?(:premium) || user.level?(:admin)) ? all : joins(:wikis).where('wikis.private' => false) }
 
   validates :tag, uniqueness: true 
   
@@ -16,17 +14,15 @@ class Tag < ActiveRecord::Base
     end
   end
     
-  def cull   
-    # search for and cull random empty tags from collection upon a tag.destroy event (as opposed to wiki.destroy)
-    # written so as to run periodically without a cron event
-    # QUESTION:  This took too long when there are a lot of tags to cull
-    # Move to after_save for more frequent usage?
-    # This is creating an after_destroy loop!
-    Tag.all.each do |t|
-      if t.wikis.count == 0 
-        t.destroy
-      end
-    end
-  end
+  # TO DO: rewrite as a rake task  
+  # def cull   
+  #   # search for and cull random empty tags from collection upon a tag.save event 
+  #   # written so as to run periodically without a cron event; rewrite as rake task
+  #   Tag.all.each do |t|
+  #     if t.wikis.count == 0 
+  #       t.destroy
+  #     end
+  #   end
+  # end
 
 end

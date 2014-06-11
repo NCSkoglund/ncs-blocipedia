@@ -23,17 +23,10 @@
 </div>
 
 <div class="col-md-4">
-  <p>All tags</p>
+  <p>Accessible tags:</p>
   <small>
-    <!-- QUESTION:  repeats elsewhere, could pull this out into a helper method? -->
-    <% if current_user && (current_user.level?(:premium) || current_user.level?(:admin)) %>
-      <% @tags.each do |t| %>
-        <%= link_to t.tag, t %> Wikicount: <%= t.wikis.count %><br/>
-      <% end %>
-    <% else %>
-      <% @public_tags.uniq.each do |t| %>
-        <%= link_to t.tag, t %> Wikicount: <%= t.wikis.count %><br/>
-      <% end %>
+    <% @visible_tags.uniq.each do |t| %>
+      <%= link_to t.tag, t %> Wikicount: <%= t.wikis.count %><br/>
     <% end %>
   </small>
 </div>

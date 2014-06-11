@@ -9,16 +9,15 @@ class Wiki < ActiveRecord::Base
   has_and_belongs_to_many :tags,  join_table: :wikis_tags
   accepts_nested_attributes_for :tags, :reject_if => proc { |a| a['tag'].blank? }
 
-  default_scope { order('created_at DESC') }
-  scope :visible_to, ->(user) { (user.level?(:premium) || user.level?(:admin)) ? all : where(private: false) }
-
+  default_scope { order('title DESC') }#('created_at DESC') }
+  
   validates :title, presence: true, format: { with: /\s*\S.{3,}\S\s*/, message: "title must contain at least five valid characters" }
   validates :body, length: { minimum: 20 }, presence: true
   validates :private, inclusion: { in: [true, false] }
-  
+
   private
 
-  # modify as default in migration? 
+  # TO DO: modify as default in migration? 
   # prevent private field from being left as nil
   def set_public
     if self.private == nil 
