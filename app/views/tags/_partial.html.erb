@@ -1,0 +1,9 @@
+<!-- for tags#index & tags#show -->
+<% if current_user && (current_user.level?(:premium) || current_user.level?(:admin)) %>
+  <%= link_to wiki.title, wiki %>
+<% else %>
+  <% if wiki.private == false %>
+    <%= link_to wiki.title, wiki %>
+  <% end %>
+  Private?  <%= wiki.private %><br/>
+<% end %>

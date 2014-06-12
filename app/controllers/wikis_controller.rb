@@ -1,34 +1,8 @@
 class WikisController < ApplicationController
 
   def index
-  
-    @wikis = Wiki.all 
-    # Privacy scoping regarding owners and collaborators of private wikis
-    # this necessitates the addition of array_policy.rb 
-    if current_user && current_user.level?(:admin)
-      @wikis = Wiki.all
-    elsif current_user && current_user.level?(:premium) 
-      @visible_wikis = []
-      @wikis.each do |w|
-        if ( w.users.include?(current_user) || w.owner == current_user ) 
-          @visible_wikis << w 
-        end
-      end
-      @wikis = @visible_wikis
-    else 
-      # Privacy scoping for guest users & basic users
-      @wikis = Wiki.where(private: false)
-    end
-
-    @tags = Tag.all
-    # for privacy scoping regarding tags and public/private wikis
-    # this runs on @wikis after user-privacy scoping has been performed
-    @visible_tags = []
-    @wikis.each do |w|
-      w.tags.each do |t|
-        @visible_tags << t
-      end
-    end
+    current_user ? @wikis = Wiki.visible_wikis(current_user) : @wikis = Wiki.where(private: false)
+    @tags = Wiki.visible_tags(@wikis) # This seems like it shouldn't be a Wiki class method
     authorize @wikis
   end
 

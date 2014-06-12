@@ -5,15 +5,18 @@
 <em> Total Wikicount:  <%= @tag.wikis.count %><br/><br/></em>
 <small>
   <% @wikis.each do |wiki| %>
+
+    <!-- I want this to be a shared partial but don't know how to handle local variables inside an each block--> 
     <% if current_user && (current_user.level?(:premium) || current_user.level?(:admin)) %>
       <%= link_to wiki.title, wiki %>
-      Private?  <%= wiki.private %><br/>
     <% else %>
       <% if wiki.private == false %>
         <%= link_to wiki.title, wiki %>
-        Private?  <%= wiki.private %><br/>
       <% end %>
+      Private?  <%= wiki.private %><br/>
     <% end %>
+
+
   <% end %>
 </small>
 <hr/>
