@@ -114,4 +114,36 @@ describe User do
       @user.encrypted_password.should_not be_blank
     end
   end
+
+  describe "collaborator settings" do 
+
+    before (:each) do
+      @user = FactoryGirl.create(:user)
+      @wiki = FactoryGirl.create(:wiki)
+      @wiki2 = FactoryGirl.create(:wiki)
+      @wiki.users << @user
+    end
+
+    it "handles a user with one collaboration" do
+      @user.wikis.count.should eq(1)
+      @user.should be_valid
+    end
+
+    it "handles a user with multiple collaborations" do
+      @wiki2.users << @user
+      @user.wikis.count.should eq(2)
+      @user.should be_valid
+    end
+
+    it "handles a user with no collaborations" do
+      @user.wikis.destroy_all
+      @user.wikis.count.should eq(0)
+      @user.should be_valid
+    end 
+
+    it "can own a wiki" do
+      @wiki.update_attribute(:owner, @user)
+      @user.owned_wikis.count.should eq(1)
+    end 
+  end
 end

@@ -20,6 +20,8 @@ class WikiPolicy < ApplicationPolicy
   def update?
     if user.present? && record.private == false
       true
+
+    # turn this into a private function
     elsif user.present? && user.level?(:admin)
       true
     elsif user.present? && (user.level?(:premium) && (record.users.include?(user) || record.owner == user))

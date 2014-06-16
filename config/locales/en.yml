@@ -29,17 +29,3 @@ en:
     edit?: 'No edit for you!'
     update?: 'No update for you!'
     destroy?: 'No destroy for you!'
-    # application_policy:
-    #   index?: 'No index for you!'
-    #   show?: 'No show for you!'
-    #   new?: 'No new for you!'
-    #   create?: 'No create for you!'
-    #   update?: 'No update for you!'
-    #   destroy?: 'No destroy for you!'
-    # wiki_policy:
-    #   index?: 'No index for you!'
-    #   show?: 'No show for you!'
-    #   new?: 'No new for you!'
-    #   create?: 'No create for you!'
-    #   update?: 'No update for you!'
-    #   destroy?: 'No destroy for you!'

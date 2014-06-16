@@ -14,5 +14,6 @@ end
 FactoryGirl.modify do
   factory :user do    
     level "basic"
+    sequence(:email) { |n| "person#{n}@example.com" }
   end
 end

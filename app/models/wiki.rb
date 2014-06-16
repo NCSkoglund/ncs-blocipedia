@@ -21,7 +21,7 @@ class Wiki < ActiveRecord::Base
       @visible_wikis = self.all
     elsif user.level?(:premium)    
       self.all.each do |w|
-        if ( w.users.include?(user) || w.owner == user ) 
+        if ( w.users.include?(user) || w.owner == user || !w.private ) 
           @visible_wikis << w
         end
       end
@@ -31,14 +31,15 @@ class Wiki < ActiveRecord::Base
     @visible_wikis # this works incorrectly if not explicitly returned
   end
   
-  def self.visible_tags(array) 
-    @visible_tags = []
-    array.each do |w|
+  def self.visible_tags(wikilist) 
+    visible_tags = []
+    wikilist.each do |w|
       w.tags.each do |t|
-        @visible_tags << t
+        visible_tags << t
       end
     end
-    @visible_tags
+    visible_tags = visible_tags.uniq
+    visible_tags 
   end
 
   private

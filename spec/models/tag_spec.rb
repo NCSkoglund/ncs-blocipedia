@@ -61,13 +61,13 @@ describe Tag do
       @jesamine_tag.wikis.count.should == 1
     end
 
-    it "destroying a tag will cull other tags from the collection if their wiki count is zero" do
+    pending "destroying a tag will cull other tags from the collection if their wiki count is zero" do
       Tag.all.should include(@folder_tag)
       @jesamine_tag.destroy
       Tag.all.should_not include(@folder_tag)
     end
 
-    it "destroying a tag will not affect other tags if their wiki count is greater than zero" do 
+    pending "destroying a tag will not affect other tags if their wiki count is greater than zero" do 
       Tag.all.should include(@jesamine_tag)
       @folder_tag.destroy
       Tag.all.should include(@jesamine_tag)

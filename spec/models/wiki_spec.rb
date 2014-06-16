@@ -95,15 +95,47 @@ describe Wiki do
       @wiki.private.should be_false
     end
 
-    it "rejects an empty private field" do
+    it "sets an empty private field to false" do
       @wiki.private = ""
-      @wiki.should_not be_valid
+      @wiki.private.should be_false
     end
 
-    it "rejects a nil private field" do
+    it "sets a nil private field to false" do
       @wiki.private = nil
-      @wiki.should_not be_valid
+      @wiki.private.should be_false
     end
+
+    it "has an owner" do
+      @user = FactoryGirl.create(:user)
+      @wiki.update_attribute(:owner, @user)
+      @wiki.owner.should eq(@user)
+    end
+  end
+
+  describe "collaborator settings" do 
+ 
+    before (:each) do
+      @user = FactoryGirl.create(:user)
+      @user2 = FactoryGirl.create(:user)
+      @wiki.users << @user
+    end
+
+    it "handles a wiki with one collaborator" do
+      @wiki.users.count.should eq(1)
+      @wiki.should be_valid
+    end
+
+    it "handles a wiki with multiple collaborators" do
+      @wiki.users << @user2
+      @wiki.users.count.should eq(2)
+      @wiki.should be_valid
+    end
+
+    it "handles a wiki with no collaborators" do
+      @wiki.users.destroy_all
+      @wiki.users.count.should eq(0)
+      @wiki.should be_valid
+    end 
   end
 
   describe "wiki-tag associations" do 
@@ -129,19 +161,6 @@ describe Wiki do
     end 
   end
 
-  # pending "if private, it should have collaborators/contributor"
-      # "collaborator:  an object matching a user_id with a wiki_id"
-  #   it "public"
-  #     "anyone can be a collaborator"
-  #   it "@wiki.update_attribute(:public, false)"
-  #     "a collaborator must have this wiki_id to view/edit"
-  #     "a user has_many collaborations"
-  #   it "if a user is a collaborator, they should have edit permissions"
-  #     "create user, add as collaborator, can edit"
-  #     "another user, not collaborator, cannot edit"
-  #   it "a private wiki should be able to list its multiple collaborators"
-
-
   # pending "it should be able to be flagged for improvement"
   #   it "article successfully flagged"
   #      "wiki mark flag, wiki.flagged?.should be_true"
@@ -149,8 +168,4 @@ describe Wiki do
   # pending "it should be able to have a flag removed after improvement"
   #   it "article successfully unflagged"  
   #     "wiki flagged, remove flag, wiki.flagged?.should be_false"
-
-
-  # pending "it should show the timestamp of its last update"
-  #   it "wiki created, last modified timestamp, edit wiki, new last modified timestamp"
 end

@@ -29,9 +29,7 @@ describe UsersController do
     
   end
 
-  ##################  Where should these be located?  Actions grouped by user type within controllers.
-  
-  describe "user permissions regarding users controller" do
+  describe "user level permissions regarding users_controller" do
 
     context "as a basic user" do
 
@@ -44,10 +42,6 @@ describe UsersController do
         get :index
         response.should be_success
       end
-
-      pending "can navigate to its own edit profile page"
-      pending "cannot navigate to the edit profile page of another user"
-
     end
 
     context "as a premium user" do
@@ -64,9 +58,6 @@ describe UsersController do
         get :index
         response.should be_success
       end
-
-      pending "can navigate to its own edit profile page"
-      pending "cannot navigate to the edit profile page of another user"
     end
 
     context "as an admin user" do
@@ -83,11 +74,6 @@ describe UsersController do
         get :index
         response.should be_success
       end
-
-      pending "can navigate to its own edit profile page"
-      #   # membership level can only be altered through command line
-      pending "cannot navigate to the edit profile page of another user"
-      #   # this should be accomplished through command line
     end
 
     context "as a guest user" do
@@ -124,12 +110,6 @@ describe UsersController do
       it "should display a flash message upon denial of user profile" do
         get :show, :id => @user.id
         flash[:alert].should eq("You need to sign in or sign up before continuing.")
-      end
-
-      pending "cannot navigate to view a user's edit profile page" do
-        ### How to travel to a path outside of the controller's routes?
-        # get edit_user_registration_path, :controller => "application", :id => @user.id
-        # response.should be_success
       end
     end
   end 

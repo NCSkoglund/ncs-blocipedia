@@ -1,8 +1,9 @@
 class WikisController < ApplicationController
 
   def index
+    # Rewrite as User class method rather than Wiki?
     current_user ? @wikis = Wiki.visible_wikis(current_user) : @wikis = Wiki.where(private: false)
-    @tags = Wiki.visible_tags(@wikis) # This seems like it shouldn't be a Wiki class method
+    @tags = Wiki.visible_tags(@wikis) 
     authorize @wikis
   end
 
