@@ -10,7 +10,7 @@
           <small>
             <em>Total Wikicount: <%= tag.wikis.count %></em><br/>
             <% tag.wikis.each do |wiki| %>
-              <% if is_wiki_viewable?(current_user, wiki) %>
+              <% if wiki.is_wiki_viewable?(current_user) %>
                 <%= link_to wiki.title, wiki %>
                 Private?  <%= wiki.private %><br/>
               <% end %>

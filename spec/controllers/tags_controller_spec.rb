@@ -34,8 +34,8 @@ describe TagsController do
     end
     
     it "populates an array of tags" do
-      # given a basic user
-      assigns(:tags).should eq(@wiki.tags)
+      # given a basic user, returns in opposite order so needs reverse to create match
+      assigns(:tags).should eq(@wiki.tags.reverse.to_a)
     end
   end
 

@@ -20,7 +20,13 @@ class Wiki < ActiveRecord::Base
     tag_array.concat(newtags)
   end
   
-  # for use in tags_helper.rb and wiki_policy.rb
+  def is_wiki_viewable?(current_user)
+    if self.private == false
+      true
+    else self.scope_helper(current_user)
+    end
+  end
+
   def scope_helper(current_user)
     if current_user.present? && current_user.level?(:admin)
       true
