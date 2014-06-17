@@ -1,8 +1,10 @@
 class TagsController < ApplicationController
 
   def index
-    current_user ? @wikis = Wiki.visible_wikis(current_user) : @wikis = Wiki.where(private: false) 
-    @tags = Wiki.visible_tags(@wikis)
+    current_user ? @wikis = current_user.visible_wikis : @wikis = Wiki.where(private: false) 
+    @tags = []
+    @wikis.each { |w| w.grab_tags(@tags) }
+    @tags = @tags.uniq
     authorize @tags
   end
 

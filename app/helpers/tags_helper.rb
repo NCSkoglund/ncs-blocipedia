@@ -1,10 +1,11 @@
 module TagsHelper
 
-  # for use in tags#index and tags#show
+  # for use in tags#index and tags#show views
   def is_wiki_viewable?(current_user, wiki)
-    return true if !wiki.private
-    return true if current_user && (current_user.level?(:premium) || current_user.level?(:admin))
-    return false
+    if wiki.private == false
+      true
+    else wiki.scope_helper(current_user)
+    end
   end
 
 end

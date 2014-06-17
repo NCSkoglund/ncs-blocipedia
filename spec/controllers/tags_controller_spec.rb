@@ -34,7 +34,8 @@ describe TagsController do
     end
     
     it "populates an array of tags" do
-      assigns(:tags).should eq(Wiki.visible_tags(assigns(:wikis)))
+      # given a basic user
+      assigns(:tags).should eq(@wiki.tags)
     end
   end
 

@@ -23,11 +23,12 @@ describe WikisController do
     end
 
     it "populates an array of wikis" do
-      assigns(:wikis).should eq(Wiki.visible_wikis(@user))
+      assigns(:wikis).should eq(@user.visible_wikis)
     end
     
     it "populates an array of tags" do
-      assigns(:tags).should eq(Wiki.visible_tags(assigns(:wikis)))
+      #given a basic user
+      assigns(:tags).should eq(@wiki.tags)
     end
   end
 
@@ -373,7 +374,7 @@ describe WikisController do
 
       it "populates an array of wikis that are visible to the current user" do
         get :index
-        assigns(:wikis).should eq(Wiki.visible_wikis(@user))
+        assigns(:wikis).should eq(@user.visible_wikis)
       end
 
       it "does not include private wikis" do
@@ -452,7 +453,7 @@ describe WikisController do
 
       it "populates an array of wikis that are visible to the current user" do
         get :index
-        assigns(:wikis).should eq(Wiki.visible_wikis(@user))
+        assigns(:wikis).should eq(@user.visible_wikis)
       end
 
       it "includes collaborative private wikis" do

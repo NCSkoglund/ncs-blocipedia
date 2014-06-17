@@ -13,35 +13,24 @@ class Wiki < ActiveRecord::Base
   validates :title, presence: true, format: { with: /\s*\S.{3,}\S\s*/, message: "title must contain at least five valid characters" }
   validates :body, length: { minimum: 20 }, presence: true
   validates :private, inclusion: { in: [true, false] }
-
-  # privacy scoping for user levels; `self` here is the Wiki class
-  def self.visible_wikis(user) 
-    @visible_wikis = [] 
-    if user.level?(:admin)
-      @visible_wikis = self.all
-    elsif user.level?(:premium)    
-      self.all.each do |w|
-        if ( w.users.include?(user) || w.owner == user || !w.private ) 
-          @visible_wikis << w
-        end
-      end
-    else
-      @visible_wikis = self.where(private: false)
-    end
-    @visible_wikis # this works incorrectly if not explicitly returned
+  
+  # add a wiki's tags to an existing list of tags
+  def grab_tags(tag_array)
+    newtags = self.tags.to_a
+    tag_array.concat(newtags)
   end
   
-  def self.visible_tags(wikilist) 
-    visible_tags = []
-    wikilist.each do |w|
-      w.tags.each do |t|
-        visible_tags << t
-      end
+  # for use in tags_helper.rb and wiki_policy.rb
+  def scope_helper(current_user)
+    if current_user.present? && current_user.level?(:admin)
+      true
+    elsif current_user.present? && (current_user.level?(:premium) && (self.users.include?(current_user) || self.owner == current_user))
+      true 
+    else
+      false
     end
-    visible_tags = visible_tags.uniq
-    visible_tags 
   end
-
+  
   private
 
   # TO DO: modify as default in migration? 
