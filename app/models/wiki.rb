@@ -5,6 +5,7 @@ class Wiki < ActiveRecord::Base
 
   has_many :collaboration
   has_many :users, :through => :collaboration 
+#  accepts_nested_attributes_for :users #, :reject_if => proc { |a| a['tag'].blank? }
   
   has_and_belongs_to_many :tags,  join_table: :wikis_tags
   accepts_nested_attributes_for :tags, :reject_if => proc { |a| a['tag'].blank? }

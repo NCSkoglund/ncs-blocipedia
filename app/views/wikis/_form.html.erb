@@ -1,5 +1,5 @@
 <div class="col-md-8">
-  <%= form_for @wiki do |f| %>
+  <%= form_for @wiki do |f|%>  
     <% if @wiki.errors.any? %>
       <div class="alert alert-danger">
         <h4>There 
@@ -24,18 +24,21 @@
       <%= f.label :body %>
       <%= f.text_area :body, rows: 8, class: 'form-control', placeholder: "Enter wiki body text" %>
     </div>
+    
+
     <% if current_user.level?('premium') || current_user.level?(:admin) %>
       <div class="form-group">
         <%= f.label :private, class: 'checkbox' do %>
-          <%= f.check_box :private %> Private Wiki 
+          <%= f.check_box :private, id: 'private_field' %> Private Wiki 
         <% end %>
       </div>
-     
-      <!--I don't need fields_for to create the HABTM association --> 
-      <!-- leave as select for now; change manner of selection later -->
-      <%= select_tag :users, options_from_collection_for_select(User.all, 'id', 'email', @wiki.users.map{ |j| j.id }), :multiple => true %>
-  
-    <% end %>
+
+
+    <%= render partial: 'users', :locals => { f: f , wiki: @wiki } %>
+    
+      <% end %>
+
+
     <div class="form-group">
       <%= f.label "Select One or More Tags" %><br/>
       <%= select_tag :tags, options_from_collection_for_select(Tag.all, 'id', 'tag', @wiki.tags.map{ |j| j.id }), :multiple => true %>

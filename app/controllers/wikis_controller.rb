@@ -16,6 +16,7 @@ class WikisController < ApplicationController
 
   def new
     @wiki = Wiki.new
+    #@wiki.users.build
     @tag = Tag.new
     authorize @wiki
   end
@@ -101,7 +102,7 @@ class WikisController < ApplicationController
   private
   # `tags_attributes` is necessary for the creation of a tag through a wiki form, but not the association of a user
   def wiki_params
-    params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag])
+    params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag])#, users_attributes: [:id, :name])
   end
 
 end
