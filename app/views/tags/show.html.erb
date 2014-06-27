@@ -2,9 +2,13 @@
 <h1>Tags#show</h1>
 <h3><%= @tag.tag %></h3>
 <p>List of wikis associated with a tag</p>
+<em> Total Wikicount:  <%= @tag.wikis.count %><br/><br/></em>
 <small>
   <% @wikis.each do |wiki| %>
-      <%= link_to wiki.title, wiki %><br/>
+    <% if wiki.is_wiki_viewable?(current_user) %>
+      <%= link_to wiki.title, wiki %>
+      Private?  <%= wiki.private %><br/>
+    <% end %>
   <% end %>
 </small>
 <hr/>

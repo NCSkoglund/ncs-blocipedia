@@ -8,49 +8,5 @@
       <li>Lorem ipsum.</li>
     </ul>
   </div>
-  <div class="col-md-8">
-    <%= form_for @wiki do |f| %>
-      <% if @wiki.errors.any? %>
-        <div class="alert alert-danger">
-          <h4>There 
-            <%= @wiki.errors.count == 1 ? 'is' : 'are' %>
-            <%= pluralize(@wiki.errors.count, "error") %>.</h4>
-          <ul>
-            <% @wiki.errors.full_messages.each do |msg| %>
-              <li><%= msg %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-      <div class="form-group">
-        <%= f.label :title %>
-        <%= f.text_field :title, class: 'form-control', placeholder: "Enter wiki name" %>
-      </div>
-       <div class="form-group">
-        <%= f.label :description %>
-        <%= f.text_area :description, rows: 8, class: 'form-control', placeholder: "Enter wiki description" %>
-      </div>
-       <div class="form-group">
-        <%= f.label :body %>
-        <%= f.text_area :body, rows: 8, class: 'form-control', placeholder: "Enter wiki body" %>
-      </div>
-      <!--
-      <div class="form-group">
-        <%# f.label :public, class: 'checkbox' do %>
-          <%# f.check_box :public %> Public topic
-        <%# end %>
-      </div>
-    -->
-    <div class="form-group">
-        <%= f.label "Edit tag selection" %><br/>
-        <%= select_tag "tags", options_from_collection_for_select(Tag.all, 'id', 'tag', @wiki.tags.map{ |j| j.id }), :multiple => true %>
-      </div>
-      <%= f.fields_for :tags, @tag do |tags_form| %>
-          <%= tags_form.label "Add a New Tag" %><br/>
-          <%= tags_form.text_field :tag %>
-      <% end %> 
-      <br/><br/>
-      <%= f.submit "Save", class: 'btn btn-success' %>
-    <% end %>
-  </div>
+  <%= render partial: 'form', wiki: @wiki %>
 </div>

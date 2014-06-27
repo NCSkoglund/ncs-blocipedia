@@ -3,9 +3,21 @@ require 'spec_helper'
 describe TagsController do
 
   before (:each) do
+    # create a basic user
+    @user = FactoryGirl.create(:user)
+    sign_in @user
+
     @tag = FactoryGirl.create(:tag)
     @wiki = FactoryGirl.create(:wiki)
-    @tag.wikis << @wiki
+    @wiki.tags << @tag
+
+    @private_wiki = FactoryGirl.create(:wiki, private: true)
+    @private_tag = FactoryGirl.create(:tag)
+    @private_wiki.tags << @private_tag
+
+    @private_wiki2 = FactoryGirl.create(:wiki, private: true)
+    @private_tag2 = FactoryGirl.create(:tag)
+    @private_wiki2.tags << @private_tag2
   end
 
   describe "GET 'index'" do
@@ -20,13 +32,10 @@ describe TagsController do
     it "renders the :index view" do
       response.should render_template :index
     end
-
-    it "populates an array of wikis" do
-      assigns(:wikis).should eq(Wiki.all)
-    end
     
     it "populates an array of tags" do
-      assigns(:tags).should eq(Tag.all)
+      # given a basic user, returns in opposite order so needs reverse to create match
+      assigns(:tags).should eq(@wiki.tags.reverse.to_a)
     end
   end
 
@@ -64,4 +73,175 @@ describe TagsController do
       end
     end     
   end
+
+ describe "user level permissions regarding tags_controller" do
+
+    context "as a basic user" do
+
+      it "can see an index of tags that belong to public wikis" do
+        get :index
+        assigns(:tags).should include(@tag)
+      end
+
+      it "cannot see an index of tags that belong to private wikis" do
+        get :index
+        assigns(:tags).should_not include(@private_tag)
+      end
+
+      it "can show a tag but differentiate between the privacy of its associated wikis" do 
+        @private_wiki.tags << @tag
+        get :index
+        assigns(:tags).should include(@tag)
+        assigns(:wikis).should_not include(@private_wiki)      
+      end
+
+      it "can navigate to the show page of a tag that belongs to a public wiki" do 
+        get :show, id: @tag.id
+        response.should be_success
+      end
+
+      it "cannot navigate to the show page of a tag that belongs to a private wiki" do
+        get :show, id: @private_tag.id
+        response.should_not be_success
+      end
+
+    end 
+
+    context "as a premium user" do
+
+      before(:each) do
+        @user.update_attribute(:level, "premium")
+        @private_wiki2.users << @user
+      end
+
+      it "can see an index of tags that belong to public wikis" do
+        get :index
+        assigns(:tags).should include(@tag)
+      end
+
+      it "can see an index of tags that belong to collaborative private wikis" do
+        get :index
+        assigns(:tags).should include(@private_tag2)
+      end
+
+      it "cannot see an index of tags that belong to non-collaborative private wikis " do
+        get :index
+        assigns(:tags).should_not include(@private_tag)
+      end
+
+      it "can show a tag but differentiate between the privacy of its associated wikis" do 
+        @private_wiki.tags << @tag
+        get :index
+        assigns(:tags).should include(@tag)
+        assigns(:wikis).should_not include(@private_wiki)      
+      end
+
+      it "can navigate to the show page of a tag that belongs to a public wiki" do
+        get :show, id: @tag.id
+        response.should be_success
+      end
+
+      it "can navigate to the show page of a tag that belongs to a collaborative private wiki" do
+        get :show, id: @private_tag2.id
+        response.should be_success
+      end
+
+      it "cannot navigate to the show page of a tag that belongs to a non-collaborative private wiki" do
+        get :show, id: @private_tag.id
+        response.should_not be_success
+      end
+
+    end
+
+    context "as an admin user" do
+
+      before(:each) do
+        @user.update_attribute(:level, "admin")
+        @private_wiki2.users << @user
+      end 
+
+      it "can see an index of tags that belong to public wikis" do
+        get :index
+        assigns(:tags).should include(@tag)
+      end
+
+      it "can see an index of tags that belong to collaborative private wikis" do
+        get :index
+        assigns(:tags).should include(@private_tag2)
+      end
+
+      it "can see an index of tags that belong to non-collaborative private wikis " do
+        get :index
+        assigns(:tags).should include(@private_tag)
+      end
+
+      it "can show a tag and all associated wikis regardless of privacy" do 
+        @private_wiki.tags << @tag
+        get :index
+        assigns(:tags).should include(@tag)
+        assigns(:wikis).should include(@private_wiki)      
+      end
+      
+      it "can navigate to the show page of a tag that belongs to a public wiki" do
+        get :show, id: @tag.id
+        response.should be_success
+      end
+
+      it "can navigate to the show page of a tag that belongs to a collaborative private wiki" do
+        get :show, id: @private_tag2.id
+        response.should be_success
+      end
+
+      it "can navigate to the show page of a tag that belongs to a non-collaborative private wiki" do
+        get :show, id: @private_tag.id
+        response.should be_success
+      end
+
+    end
+
+    context "as a guest user" do
+
+      before (:each) do
+        @private_wiki2.users << @user 
+        sign_out @user
+      end
+      
+      it "can see an index of tags that belong to public wikis" do
+        get :index
+        assigns(:tags).should include(@tag)
+      end
+
+      it "cannot see an index of tags that belong to collaborative private wikis" do
+        get :index
+        assigns(:tags).should_not include(@private_tag2)
+      end
+
+      it "cannot see an index of tags that belong to non-collaborative private wikis " do
+        get :index
+        assigns(:tags).should_not include(@private_tag)
+      end
+
+      it "can show a tag but differentiate between the privacy of its associated wikis" do 
+        @private_wiki.tags << @tag
+        get :index
+        assigns(:tags).should include(@tag)
+        assigns(:wikis).should_not include(@private_wiki)      
+      end
+
+      it "can navigate to the show page of a tag that belongs to a public wiki" do
+        get :show, id: @tag.id
+        response.should be_success
+      end
+
+      it "cannot navigate to the show page of a tag that belongs to a collaborative private wiki" do
+        get :show, id: @private_tag2.id
+        response.should_not be_success
+      end
+
+      it "cannot navigate to the show page of a tag that belongs to a non-collaborative private wiki" do
+        get :show, id: @private_tag.id
+        response.should_not be_success
+      end
+    end
+  end 
 end

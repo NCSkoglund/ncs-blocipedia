@@ -21,3 +21,11 @@
 
 en:
   hello: "Hello world"
+  pundit:
+    index?: 'No index for you!'
+    show?: 'No show for you!'
+    new?: 'No new for you!'
+    create?: 'No create for you!'
+    edit?: 'No edit for you!'
+    update?: 'No update for you!'
+    destroy?: 'No destroy for you!'

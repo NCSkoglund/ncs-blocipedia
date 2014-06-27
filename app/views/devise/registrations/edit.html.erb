@@ -13,6 +13,14 @@
         <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
       <% end %>
     </div>
+    
+    <% unless resource.level == "admin" %>
+      <div class="form-group">
+        <%= f.label "Membership Level" %><br/>
+        <%= f.select(:level, options_for_select([['Basic Account', 'basic'],['Premium Account', 'premium']], resource.level), :multiple => false) %>
+      </div>
+    <% end %>
+
     <fieldset>
       <p>Leave these fields blank if you don't want to change your password.</p>
       <div class="form-group">

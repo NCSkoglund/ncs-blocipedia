@@ -1,0 +1,9 @@
+<%= f.fields_for :collaborations do |builder| %>
+  <fieldset>
+    <%= builder.label "Add a Collaborator" %>
+    <%= builder.collection_select :user_id, User.all, :id, :name %>
+    <%= builder.hidden_field :_destroy %>
+    <%= link_to "remove", '#', class: "remove_fields" %>
+  </fieldset>
+  <br/>
+<% end %>

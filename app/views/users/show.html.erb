@@ -1,4 +1,18 @@
 <h3>User</h3>
 <p>User: <%= @user.name %></p>
 <p>Email: <%= @user.email if @user.email %></p>
-<%= link_to 'Edit account', edit_user_path %>
+<p>Membership Level: <%= @user.level %></p>
+<% if @user == current_user %>
+  <%= link_to 'Edit account', edit_user_registration_path %>
+<% end %>
+<% if @user == current_user || current_user.level?(:admin) %>
+  <p>Owned wikis:</p>
+  <% @user.owned_wikis.each do |w| %>
+    <%= link_to w.title, w %><br/>
+  <% end %>
+  <br/><br/>
+  <p>Wikis:</p>
+  <% @user.wikis.each do |w| %>
+    <%= link_to w.title, w %><br/>
+  <% end %>
+<% end %>

@@ -1,26 +1,32 @@
 class WikisController < ApplicationController
 
   def index
-    @wikis = Wiki.all
-    @tags = Tag.all
+    current_user ? @wikis = current_user.visible_wikis : @wikis = Wiki.where(private: false) 
+    @tags = []
+    @wikis.each { |w| w.grab_tags(@tags) }
+    @tags = @tags.uniq
+    authorize @wikis
   end
 
   def show
     @wiki = Wiki.find(params[:id])
     @tags = @wiki.tags
+    authorize @wiki
   end
 
   def new
     @wiki = Wiki.new
+    @wiki.collaborations.build
     @tag = Tag.new
+    authorize @wiki
   end
 
   def create 
     @wiki = Wiki.new(wiki_params)
-
+    @wiki.owner = current_user
     @tags = Tag.where(:id => params[:tags])  # Allow preexisting tags to be associated with the wiki from select box
     @wiki.tags << @tags # associate the selected tags to the wiki and create records in the join table.
-
+    authorize @wiki
     if @wiki.save
       redirect_to @wiki, notice: "Wiki was saved successfully."
     else
@@ -32,17 +38,29 @@ class WikisController < ApplicationController
 
   def edit
     @wiki = Wiki.find(params[:id])
+    @wiki.collaborations.build if @wiki.collaborations.count == 0
     @tags = @wiki.tags
     @tag = Tag.new
+    authorize @wiki
   end
 
   def update
     @wiki = Wiki.find(params[:id])
     @tags = Tag.where(:id => params[:tags])
-  
+    @tag_count = Tag.all.count 
+
+    authorize @wiki
     if @wiki.update_attributes(wiki_params)
+      #newly written tags are created after the save but before the following destroy_all
+      #if a new custom tag was created, manually add it to the @tags array
+      @new_tag_count = Tag.all.count
+      if @new_tag_count > @tag_count
+        @tag = Tag.last  
+        @tags << @tag
+      end
       @wiki.tags.destroy_all #only disassociate previous tags if the wiki form contains no errors
       @wiki.tags << @tags  # associate the selected tags to the wiki and create records in the join table.
+
       flash[:notice] = "Wiki was updated."
       redirect_to @wiki
     else
@@ -61,6 +79,7 @@ class WikisController < ApplicationController
       t.destroy
     end 
 
+    authorize @wiki
     if @wiki.destroy
       redirect_to wikis_path, notice: "\"#{title}\" was deleted successfully."
     else 
@@ -70,9 +89,9 @@ class WikisController < ApplicationController
   end
 
   private
-
+  # `tags_attributes` is necessary for the creation of a tag through a wiki form, but not the association of a user
   def wiki_params
-    params.require(:wiki).permit(:title, :description, :body, tags_attributes: [:id, :tag])
+    params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag], collaborations_attributes: [:id, :user_id, :_destroy])
   end
 
 end

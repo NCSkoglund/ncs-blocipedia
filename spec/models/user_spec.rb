@@ -7,11 +7,10 @@ describe User do
       :name => "Example User",
       :email => "user@example.com",
       :password => "changeme",
-      :password_confirmation => "changeme"
+      :password_confirmation => "changeme",
+      :level => "basic"
     }
   end
-
-  # it "is a pending test for free vs. premium user" 
 
   it "should require a name" do
     no_name_user = User.new(@attr.merge(:name => ""))
@@ -54,6 +53,16 @@ describe User do
     User.create!(@attr.merge(:email => upcased_email))
     user_with_duplicate_email = User.new(@attr)
     user_with_duplicate_email.should_not be_valid
+  end
+
+  it "should require a membership level" do
+    no_level_user = User.new(@attr.merge(:level => ""))
+    no_level_user.should_not be_valid 
+  end
+
+  it "should recognize a user's membership level" do 
+    @user = User.create(@attr)
+    @user.level?(:basic).should be_true
   end
 
   describe "passwords" do
@@ -104,7 +113,37 @@ describe User do
     it "should set the encrypted password attribute" do
       @user.encrypted_password.should_not be_blank
     end
-
   end
 
+  describe "collaborator settings" do 
+
+    before (:each) do
+      @user = FactoryGirl.create(:user)
+      @wiki = FactoryGirl.create(:wiki)
+      @wiki2 = FactoryGirl.create(:wiki)
+      @wiki.users << @user
+    end
+
+    it "handles a user with one collaboration" do
+      @user.wikis.count.should eq(1)
+      @user.should be_valid
+    end
+
+    it "handles a user with multiple collaborations" do
+      @wiki2.users << @user
+      @user.wikis.count.should eq(2)
+      @user.should be_valid
+    end
+
+    it "handles a user with no collaborations" do
+      @user.wikis.destroy_all
+      @user.wikis.count.should eq(0)
+      @user.should be_valid
+    end 
+
+    it "can own a wiki" do
+      @wiki.update_attribute(:owner, @user)
+      @user.owned_wikis.count.should eq(1)
+    end 
+  end
 end

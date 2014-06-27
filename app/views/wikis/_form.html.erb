@@ -1,0 +1,62 @@
+<div class="col-md-8">
+  <%= form_for @wiki do |f|%>  
+    <% if @wiki.errors.any? %>
+      <div class="alert alert-danger">
+        <h4>There 
+          <%= @wiki.errors.count == 1 ? 'is' : 'are' %>
+          <%= pluralize(@wiki.errors.count, "error") %>.</h4>
+        <ul>
+          <% @wiki.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: 'form-control', placeholder: "Enter wiki name" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :description %>
+      <%= f.text_area :description, rows: 8, class: 'form-control', placeholder: "Enter wiki description" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :body %>
+      <%= f.text_area :body, rows: 8, class: 'form-control', placeholder: "Enter wiki body text" %>
+    </div>
+    
+
+    <% if current_user.level?('premium') || current_user.level?(:admin) %>
+      <div class="form-group">
+        <%= f.label :private, class: 'checkbox' do %>
+          <%= f.check_box :private, id: 'private_field' %> Private Wiki 
+        <% end %>
+      </div>
+
+      <div class="form-group js-new-user js-hide">
+        <% if @wiki.users.count > 0 %>
+          <%= render partial: 'collaboration_fields', locals: { f: f, wiki: @wiki } %>
+        <% end %>
+        <%= link_to_add_fields "Add another Collaborator", f , :collaborations %>
+        <br/>
+        <% @wiki.users.each do |w| %> 
+          <strong>Collaborator:  <%= w.name %><br/></strong>
+        <% end %> 
+        Collaborator Count: <%= @wiki.users.count %>
+        <br/> 
+      <% end %>
+    </div> 
+
+
+    <div class="form-group">
+      <%= f.label "Select One or More Tags" %><br/>
+      <%= select_tag :tags, options_from_collection_for_select(Tag.all, 'id', 'tag', @wiki.tags.map{ |j| j.id }), :multiple => true %>
+    </div>
+    <%= f.fields_for :tags, @tag do |tags_form| %>
+      <%= tags_form.label "Add a New Tag" %><br/>
+      <%= tags_form.text_field :tag %>
+    <% end %> 
+    <br/><br/>
+    <%= f.submit "Save", class: 'btn btn-success' %>
+  <% end %>
+</div>

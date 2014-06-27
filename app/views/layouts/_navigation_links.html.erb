@@ -1,11 +1,20 @@
 <%# add navigation links to this file %>
 <% if user_signed_in? %>
-  <li><%= link_to 'Edit account', edit_user_registration_path %></li>
+
+  <li style="color:#fff;"><%= Time.current %></li><br/>
+  
+  <% if Time.current.seconds_since_midnight > 64800 %> <!-- after 6pm -->
+    <li><%= link_to "Good evening #{current_user.name}!", current_user %></li>
+  <% elsif Time.current.seconds_since_midnight < 43200 %>  <!-- before noon -->
+    <li><%= link_to "Good morning #{current_user.name}!", current_user %></li>
+  <% else %>
+    <li><%= link_to "Good day #{current_user.name}!", current_user %></li>
+  <% end %>
+
+  <li><%= link_to 'Edit Profile', edit_user_registration_path %></li>
   <li><%= link_to 'Logout', destroy_user_session_path, :method=>'delete' %></li>
+  <li><%= link_to 'All Users', users_path %></li>
 <% else %>
   <li><%= link_to 'Login', new_user_session_path %></li>
   <li><%= link_to 'Sign up', new_user_registration_path %></li>
-<% end %>
-<% if user_signed_in? %>
-  <li><%= link_to 'Users', users_path %></li>
 <% end %>
