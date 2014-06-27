@@ -35,7 +35,9 @@
 
       <div class="form-group js-new-user js-hide">
         <% if @wiki.users.count > 0 %>
-          <%= render partial: 'collaboration_fields', locals: { f: f, wiki: @wiki } %>
+          <%= f.fields_for :collaborations do |builder| %>
+            <%= render partial: 'collaboration_fields', locals: { builder: builder } %>
+          <% end %>
         <% end %>
         <%= link_to_add_fields "Add another Collaborator", f , :collaborations %>
         <br/>

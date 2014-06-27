@@ -15,15 +15,13 @@ add = ->
     $(this).before($(this).data('fields').replace(regexp, time))
     event.preventDefault()
 
-# event binding on this one isn't working
-display = -> 
-  $('form').on 'page:load', $(".private_field, input[type='checkbox']"), ->
-    if $(".private_field, input[type='checkbox']").is(":checked")
-      $('.js-new-user').removeClass 'js-hide'     
+display = ->
+  if $("#private_field").is(":checked")
+    $('.js-new-user').removeClass 'js-hide'   
 
 checkbox = ->
-  $('form').on 'click', $(".private_field, input[type='checkbox']"), ->
-    if $(".private_field, input[type='checkbox']").is(":checked")
+  $('form').on 'click', $("#private_field"), ->
+    if $("#private_field").is(":checked")
       $('.js-new-user').removeClass 'js-hide'
     else
       $('.js-new-user').addClass 'js-hide'  
