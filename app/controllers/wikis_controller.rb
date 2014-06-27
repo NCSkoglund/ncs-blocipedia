@@ -16,22 +16,16 @@ class WikisController < ApplicationController
 
   def new
     @wiki = Wiki.new
-    #@wiki.users.build
+    @wiki.collaborations.build
     @tag = Tag.new
     authorize @wiki
   end
 
   def create 
     @wiki = Wiki.new(wiki_params)
-
+    @wiki.owner = current_user
     @tags = Tag.where(:id => params[:tags])  # Allow preexisting tags to be associated with the wiki from select box
     @wiki.tags << @tags # associate the selected tags to the wiki and create records in the join table.
-
-    @wiki.owner = current_user
-   
-    @users = User.where(:id => params[:users])
-    @wiki.users << @users
-
     authorize @wiki
     if @wiki.save
       redirect_to @wiki, notice: "Wiki was saved successfully."
@@ -44,6 +38,7 @@ class WikisController < ApplicationController
 
   def edit
     @wiki = Wiki.find(params[:id])
+    @wiki.collaborations.build if @wiki.collaborations.count == 0
     @tags = @wiki.tags
     @tag = Tag.new
     authorize @wiki
@@ -51,17 +46,11 @@ class WikisController < ApplicationController
 
   def update
     @wiki = Wiki.find(params[:id])
-    @users = User.where(:id => params[:users])
     @tags = Tag.where(:id => params[:tags])
     @tag_count = Tag.all.count 
 
     authorize @wiki
     if @wiki.update_attributes(wiki_params)
-
-      #TO DO: pull this out into an add/remove one at a time scenario, or a comma separated list?
-      @wiki.users.destroy_all
-      @wiki.users << @users
-
       #newly written tags are created after the save but before the following destroy_all
       #if a new custom tag was created, manually add it to the @tags array
       @new_tag_count = Tag.all.count
@@ -102,7 +91,7 @@ class WikisController < ApplicationController
   private
   # `tags_attributes` is necessary for the creation of a tag through a wiki form, but not the association of a user
   def wiki_params
-    params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag])#, users_attributes: [:id, :name])
+    params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag], collaborations_attributes: [:id, :user_id, :_destroy])
   end
 
 end

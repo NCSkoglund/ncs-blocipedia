@@ -3,9 +3,9 @@ class Wiki < ActiveRecord::Base
 
   belongs_to :owner, class_name: "User"   #declare alias 'owner', keep separate from 'users'
 
-  has_many :collaboration
-  has_many :users, :through => :collaboration 
-#  accepts_nested_attributes_for :users #, :reject_if => proc { |a| a['tag'].blank? }
+  has_many :collaborations
+  has_many :users, :through => :collaborations
+  accepts_nested_attributes_for :collaborations, allow_destroy: true #, :reject_if => proc { |a| a['tag'].blank? }
   
   has_and_belongs_to_many :tags,  join_table: :wikis_tags
   accepts_nested_attributes_for :tags, :reject_if => proc { |a| a['tag'].blank? }

@@ -7,8 +7,8 @@ class User < ActiveRecord::Base
   # declare alias 'owned_wikis'
   has_many :owned_wikis, foreign_key: "owner_id", class_name: "Wiki"
   
-  has_many :collaboration
-  has_many :wikis, :through => :collaboration 
+  has_many :collaborations
+  has_many :wikis, :through => :collaborations
   
   validates :name, presence: true
   validates :level, presence: true

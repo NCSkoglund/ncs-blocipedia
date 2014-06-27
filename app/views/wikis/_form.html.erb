@@ -33,10 +33,19 @@
         <% end %>
       </div>
 
-
-    <%= render partial: 'users', :locals => { f: f , wiki: @wiki } %>
-    
+      <div class="form-group js-new-user js-hide">
+        <% if @wiki.users.count > 0 %>
+          <%= render partial: 'collaboration_fields', locals: { f: f, wiki: @wiki } %>
+        <% end %>
+        <%= link_to_add_fields "Add another Collaborator", f , :collaborations %>
+        <br/>
+        <% @wiki.users.each do |w| %> 
+          <strong>Collaborator:  <%= w.name %><br/></strong>
+        <% end %> 
+        Collaborator Count: <%= @wiki.users.count %>
+        <br/> 
       <% end %>
+    </div> 
 
 
     <div class="form-group">

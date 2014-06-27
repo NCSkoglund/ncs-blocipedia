@@ -2,24 +2,37 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-$ ->
-  $("#alert").click ->
-    alert @getAttribute("data-message")
-    false
+remove = -> 
+  $('form').on 'click', '.remove_fields', (event) ->
+    $(this).prev('input[type=hidden]').val('1')
+    $(this).closest('fieldset').hide()
+    event.preventDefault() 
 
-$ -> 
-  $("#clickable").click ->
-    $(this).hide()
-    false
+add = ->
+  $('form').on 'click', '.add_fields', (event) ->
+    time = new Date().getTime()
+    regexp = new RegExp($(this).data('id'), 'g')
+    $(this).before($(this).data('fields').replace(regexp, time))
+    event.preventDefault()
 
-$ -> 
-  $("#slideme").hover ->
-    $("#clickable").show()
-    false
+# event binding on this one isn't working
+display = -> 
+  $('form').on 'page:load', $(".private_field, input[type='checkbox']"), ->
+    if $(".private_field, input[type='checkbox']").is(":checked")
+      $('.js-new-user').removeClass 'js-hide'     
 
+checkbox = ->
+  $('form').on 'click', $(".private_field, input[type='checkbox']"), ->
+    if $(".private_field, input[type='checkbox']").is(":checked")
+      $('.js-new-user').removeClass 'js-hide'
+    else
+      $('.js-new-user').addClass 'js-hide'  
 
-$(document).on 'click', $(".private_field, input[type='checkbox']"), ->
-  if $(".private_field, input[type='checkbox']").is(":checked")
-    $('.js-new-user').removeClass 'js-hide'
-  else
-    $('.js-new-user').addClass 'js-hide'
+$(document).ready(remove)
+$(document).on('page:load', remove)
+$(document).ready(add)
+$(document).on('page:load', add)
+$(document).ready(display)
+$(document).on('page:load', display)
+$(document).ready(checkbox)
+$(document).on('page:load', checkbox)
