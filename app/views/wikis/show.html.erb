@@ -1,32 +1,39 @@
-<%= link_to 'Wikis#Index', wikis_path, class: 'btn btn-primary' %><br/>
+<%= link_to 'Back to Wikis#Index', wikis_path, class: 'btn btn-primary'%>
 <h1><%= @wiki.title %></h1>
-<small>
-  <% if policy(@wiki).edit? %>
-    <%= link_to 'Wikis#Edit', edit_wiki_path, class: 'btn btn-primary' %><br/>
-  <% end %>
-  <%= @wiki.description %><br/>
-  <%= p "This wiki has not been tagged" if @tags.count == 0 %>
-  <% @tags.each do |x| %>
-      <%= link_to x.tag, x %>
-  <% end %>
-</small>
 <hr/>
-<p><%= @wiki.body %></p>
-<p>Private?  <%= @wiki.private %></p>
-<% if policy(@wiki).destroy? %>
-  <%= link_to "Delete Wiki", @wiki, method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure you want to delete this wiki?' } %>
-<% end %>
-<br />
-<br />
-<p>Owner:</p>
-<%= link_to @wiki.owner.email, @wiki.owner %>
-<br/>
-<br/>
-<p>Users:</p>
-<% @wiki.users.each do |w| %>
-  <%= link_to w.email, w %><br/>
-<% end %>
-
-
-
+<div class="col-md-8">
+  <p><%= @wiki.body %></p>
+</div>
+<div class="col-md-4">
+  <% if policy(@wiki).edit? %>
+    <%= link_to 'Edit this Wiki', edit_wiki_path, class: 'btn btn-primary' %><br/>
+  <% end %>
+  <br/>
+  <br/>
+  <strong>Tags:</strong>
+  <% if @tags.count == 0 %>
+    <p>This wiki has not been tagged</p>
+  <% else %>
+    <% @tags.each do |x| %>
+      <%= link_to x.tag, x %>
+    <% end %>
+  <% end %>
+  <br/>
+  <br/>
+  <strong>Private?</strong><%= @wiki.private %>
+  <br/>
+  <br/>
+  <strong>Owner:</strong><br/>
+  <%= link_to @wiki.owner.email, @wiki.owner %>
+  <br/>
+  <br/>
+  <strong>Users:</strong><br/>
+  <% @wiki.users.each do |w| %>
+    <%= link_to w.email, w %><br/>
+  <% end %>
+  <hr/>
+  <% if policy(@wiki).destroy? %>
+    <%= link_to "Delete this Wiki", @wiki, method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure you want to delete this wiki?' } %>
+  <% end %>
+</div>
 

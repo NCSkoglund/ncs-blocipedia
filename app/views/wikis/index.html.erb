@@ -1,8 +1,6 @@
-<div class="col-md-8">
-  <h1>Wikis#Index</h1>
-  <% if policy(@wikis).create? %>
-    <%= link_to 'Wikis#New', new_wiki_path, class: 'btn btn-primary' %>
-  <% end %>
+<h1>Wikis#Index</h1>
+<hr/>
+<div class="col-md-8">  
   <% @wikis.each do |wiki| %>
     <div class="media">
       <div class="media-body">
@@ -10,7 +8,7 @@
           <%= link_to wiki.title, wiki %>
         </h4>
         <p>
-          Private?  <%= wiki.private %>
+          <%= wiki.description %>
         </p>
         <small>
           <% wiki.tags.each do |t| %>
@@ -19,11 +17,17 @@
         </small>
       </div>
     </div>
+    Private?  <%= wiki.private %>
+    <hr/>
   <% end %>
 </div>
-
 <div class="col-md-4">
-  <p>Accessible tags:</p>
+  <% if policy(@wikis).create? %>
+    <%= link_to 'Create a New Wiki', new_wiki_path, class: 'btn btn-primary' %>
+  <% end %>
+  <br/>
+  <br/>
+  <h5 class="uline">Accessible tags:</h5>
   <small>
     <% @tags.uniq.each do |t| %>
       <%= link_to t.tag, t %> Wikicount: <%= t.wikis.count %><br/>
