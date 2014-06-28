@@ -20,16 +20,20 @@
   <% end %>
   <br/>
   <br/>
-  <strong>Private?</strong><%= @wiki.private %>
+  <strong>Private? </strong><%= @wiki.private %>
   <br/>
   <br/>
   <strong>Owner:</strong><br/>
   <%= link_to @wiki.owner.email, @wiki.owner %>
   <br/>
   <br/>
-  <strong>Users:</strong><br/>
-  <% @wiki.users.each do |w| %>
-    <%= link_to w.email, w %><br/>
+  <strong>Collaborators:</strong><br/>
+  <% if @wiki.users.count == 0 %>
+    <small><em>This wiki has no collaborators</em></small>
+  <% else %>
+    <% @wiki.users.each do |w| %>
+      <%= link_to w.email, w %><br/>
+    <% end %>
   <% end %>
   <hr/>
   <% if policy(@wiki).destroy? %>

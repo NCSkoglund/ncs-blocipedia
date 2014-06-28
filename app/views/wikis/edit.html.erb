@@ -1,12 +1,11 @@
-<h1>Wikis#edit</h1>
-<div class="row">
-  <div class="col-md-4">
-    <p>Guidelines for wikis:</p>
-    <ul>
-      <li>Lorem ipsum.</li>
-      <li>Lorem ipsum.</li>
-      <li>Lorem ipsum.</li>
-    </ul>
-  </div>
-  <%= render partial: 'form', wiki: @wiki %>
+<h1>Edit '<%= @wiki.title %>'</h1>
+<hr/>
+<%= render partial: 'form', wiki: @wiki %>
+<div class="col-md-4">
+  <h4>Guidelines:</h4>
+  <ul>
+    <li>Lorem ipsum.</li>
+    <li>Lorem ipsum.</li>
+    <li>Lorem ipsum.</li>
+  </ul>
 </div>

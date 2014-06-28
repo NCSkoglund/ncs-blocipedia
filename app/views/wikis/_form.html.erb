@@ -4,7 +4,8 @@
       <div class="alert alert-danger">
         <h4>There 
           <%= @wiki.errors.count == 1 ? 'is' : 'are' %>
-          <%= pluralize(@wiki.errors.count, "error") %>.</h4>
+          <%= pluralize(@wiki.errors.count, "error") %>.
+        </h4>
         <ul>
           <% @wiki.errors.full_messages.each do |msg| %>
             <li><%= msg %></li>
@@ -24,28 +25,19 @@
       <%= f.label :body %>
       <%= f.text_area :body, rows: 8, class: 'form-control', placeholder: "Enter wiki body text" %>
     </div>
-    
-
     <% if current_user.level?('premium') || current_user.level?(:admin) %>
       <div class="form-group">
-        <%= f.label :private, class: 'checkbox' do %>
+        <%= f.label :private, class: 'checkbox pl' do %>
           <%= f.check_box :private, id: 'private_field' %> Private Wiki 
         <% end %>
       </div>
-
       <div class="form-group js-new-user js-hide">
         <% if @wiki.users.count > 0 %>
           <%= f.fields_for :collaborations do |builder| %>
             <%= render partial: 'collaboration_fields', locals: { builder: builder } %>
           <% end %>
         <% end %>
-        <%= link_to_add_fields "Add another Collaborator", f , :collaborations %>
-        <br/>
-        <% @wiki.users.each do |w| %> 
-          <strong>Collaborator:  <%= w.name %><br/></strong>
-        <% end %> 
-        Collaborator Count: <%= @wiki.users.count %>
-        <br/> 
+        <%= link_to_add_fields "Add a Collaborator", f , :collaborations %>
       <% end %>
     </div> 
 
