@@ -10,29 +10,28 @@
   <% end %>
   <br/>
   <br/>
-  <strong>Tags:</strong>
+  <strong>Tags:</strong><br/>
   <% if @tags.count == 0 %>
-    <p>This wiki has not been tagged</p>
+    <small><em>This wiki has not been tagged</em></small>
   <% else %>
     <% @tags.each do |x| %>
-      <%= link_to x.tag, x %>
+      <%= link_to x.tag, x, class: 'pr' %>
     <% end %>
   <% end %>
   <br/>
   <br/>
-  <strong>Private? </strong><%= @wiki.private %>
-  <br/>
-  <br/>
-  <strong>Owner:</strong><br/>
-  <%= link_to @wiki.owner.email, @wiki.owner %>
-  <br/>
-  <br/>
-  <strong>Collaborators:</strong><br/>
-  <% if @wiki.users.count == 0 %>
-    <small><em>This wiki has no collaborators</em></small>
-  <% else %>
-    <% @wiki.users.each do |w| %>
-      <%= link_to w.email, w %><br/>
+  <% if @wiki.private %>
+    <strong>Owner:</strong><br/>
+    <%= link_to @wiki.owner.name, @wiki.owner %>
+    <br/>
+    <br/>
+    <strong>Collaborators:</strong><br/>
+    <% if @wiki.users.count == 0 %>
+      <small><em>This wiki has no collaborators</em></small>
+    <% else %>
+      <% @wiki.users.each do |w| %>
+        <%= link_to w.name, w %><br/>
+      <% end %>
     <% end %>
   <% end %>
   <hr/>

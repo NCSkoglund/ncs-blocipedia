@@ -12,26 +12,24 @@
         </p>
         <small>
           <% wiki.tags.each do |t| %>
-            <%= link_to t.tag, t %>
+            <%= link_to t.tag, t, class: 'pr' %>
           <% end %>
         </small>
       </div>
     </div>
-    <em>Private?  <%= wiki.private %></em><br/>
-    <small>Collaborators: <%= wiki.users.count %></small>
     <hr/>
   <% end %>
 </div>
 <div class="col-md-4">
   <% if policy(@wikis).create? %>
     <%= link_to 'Create a New Wiki', new_wiki_path, class: 'btn btn-primary' %>
+    <br/>
+    <br/>
   <% end %>
-  <br/>
-  <br/>
-  <h5 class="uline">Accessible tags:</h5>
+  <h5 class="uline">Associated tags:</h5>
   <small>
     <% @tags.uniq.each do |t| %>
-      <%= link_to t.tag, t %> Wikicount: <%= t.wikis.count %><br/>
+      <%= link_to t.tag, t %><br/>
     <% end %>
   </small>
 </div>

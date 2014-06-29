@@ -8,16 +8,12 @@
           <h4 class="media-heading">
             <%= link_to tag.tag, tag, class: "uline" %>
           </h4>
-          <small>
-            <em>Total Wikicount: <%= tag.wikis.count %></em><br/>
-          </small>
           <p>
             <ul>
               <% tag.wikis.each do |wiki| %>
                 <% if wiki.is_wiki_viewable?(current_user) %>
                   <li>
                     <%= link_to wiki.title, wiki %>
-                    <small>Private?  <%= wiki.private %></small>
                   </li>
                 <% end %>
               <% end %>

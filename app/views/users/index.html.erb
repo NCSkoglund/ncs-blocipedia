@@ -5,7 +5,7 @@
     <% @users.each do |user| %>
       <li>
         <%= link_to user.name, user %>
-        <small><em>member since <%= user.created_at.to_date %></em></small>
+        <small><em>member since <%= user.created_at.strftime("%B %d, %Y") %></em></small>
       </li>
     <% end %>
   </ul>
