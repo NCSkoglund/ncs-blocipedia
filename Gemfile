@@ -16,6 +16,7 @@ gem 'sendgrid'
 gem 'newrelic_rpm'
 gem 'pundit'
 gem 'stripe'
+gem 'redcarpet'
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_19, :mri_20, :mri_21, :rbx]
