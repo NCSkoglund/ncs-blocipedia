@@ -18,12 +18,6 @@
       <%= f.label :password_confirmation %>
       <%= f.password_field :password_confirmation, class: 'form-control' %>
     </div>
-
-    <div class="form-group">
-      <%= f.label "Membership Level" %><br/>
-      <%= f.select(:level, options_for_select([['Basic Account', 'basic'],['Premium Account', 'premium']], resource.level), :multiple => false) %>
-    </div>
-
      <%= f.submit 'Sign up', :class => 'button right' %>
   <% end %>
 </div>
