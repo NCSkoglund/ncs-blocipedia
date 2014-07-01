@@ -23,12 +23,12 @@
       <br/>
       <strong class="uline">Owned wikis:</strong><br/>
       <% @user.owned_wikis.each do |w| %>
-        <%= link_to w.title, w %><br/>
+        <%= link_to (markdown w.title), w %>
       <% end %>
       <br/>
       <strong class="uline">Collaborations:</strong><br/>
       <% @user.wikis.each do |w| %>
-        <%= link_to w.title, w %><br/>
+        <%= link_to (markdown w.title), w %>
       <% end %>
     <% end %>
   <% end %>

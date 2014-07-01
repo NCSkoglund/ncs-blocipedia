@@ -13,7 +13,7 @@
               <% tag.wikis.each do |wiki| %>
                 <% if wiki.is_wiki_viewable?(current_user) %>
                   <li>
-                    <%= link_to wiki.title, wiki %>
+                    <%= link_to (markdown wiki.title), wiki %>
                   </li>
                 <% end %>
               <% end %>
