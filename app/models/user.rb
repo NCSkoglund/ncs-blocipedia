@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   devise :invitable, :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  before_create :set_level
+
   # declare alias 'owned_wikis'
   has_many :owned_wikis, foreign_key: "owner_id", class_name: "Wiki"
   
@@ -11,7 +13,6 @@ class User < ActiveRecord::Base
   has_many :wikis, :through => :collaborations
   
   validates :name, presence: true
-  validates :level, presence: true
 
   def level?(base_level)
     level == base_level.to_s
@@ -33,4 +34,11 @@ class User < ActiveRecord::Base
     end
     visible_wikis # this works incorrectly if not explicitly returned
   end
+
+  private 
+
+  def set_level
+    self.level = "basic"
+  end
+
 end

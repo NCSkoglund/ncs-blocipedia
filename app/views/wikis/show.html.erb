@@ -21,10 +21,12 @@
   <br/>
   <br/>
   <% if @wiki.private %>
-    <strong>Owner:</strong><br/>
-    <%= link_to @wiki.owner.name, @wiki.owner %>
-    <br/>
-    <br/>
+    <% if @wiki.owner %>
+      <strong>Owner:</strong><br/>
+      <%= link_to @wiki.owner.name, @wiki.owner %>
+      <br/>
+      <br/>
+    <% end %>
     <strong>Collaborators:</strong><br/>
     <% if @wiki.users.count == 0 %>
       <small><em>This wiki has no collaborators</em></small>
