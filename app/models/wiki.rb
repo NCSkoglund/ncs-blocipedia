@@ -5,12 +5,12 @@ class Wiki < ActiveRecord::Base
 
   has_many :collaborations
   has_many :users, :through => :collaborations
-  accepts_nested_attributes_for :collaborations, allow_destroy: true #, :reject_if => proc { |a| a['tag'].blank? }
+  accepts_nested_attributes_for :collaborations, allow_destroy: true
   
   has_and_belongs_to_many :tags,  join_table: :wikis_tags
   accepts_nested_attributes_for :tags, :reject_if => proc { |a| a['tag'].blank? }
 
-  default_scope { order('title DESC') }#('created_at DESC') }
+  default_scope { order('title DESC') }
   
   validates :title, presence: true, format: { with: /\s*\S.{3,}\S\s*/, message: "title must contain at least five valid characters" }
   validates :body, length: { minimum: 20 }, presence: true
@@ -23,10 +23,7 @@ class Wiki < ActiveRecord::Base
   end
   
   def is_wiki_viewable?(current_user)
-    if self.private == false
-      true
-    else self.scope_helper(current_user)
-    end
+    self.private == false || self.scope_helper(current_user)
   end
 
   def scope_helper(current_user)
@@ -40,8 +37,6 @@ class Wiki < ActiveRecord::Base
   end
   
   private
-
-  # TO DO: modify as default in migration? 
   # prevent private field from being left as nil
   def set_public
     if self.private == nil 

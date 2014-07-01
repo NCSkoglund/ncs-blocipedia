@@ -1,18 +1,40 @@
-<h3>User</h3>
-<p>User: <%= @user.name %></p>
-<p>Email: <%= @user.email if @user.email %></p>
-<p>Membership Level: <%= @user.level %></p>
-<% if @user == current_user %>
-  <%= link_to 'Edit account', edit_user_registration_path %>
-<% end %>
-<% if @user == current_user || current_user.level?(:admin) %>
-  <p>Owned wikis:</p>
-  <% @user.owned_wikis.each do |w| %>
-    <%= link_to w.title, w %><br/>
+<%= link_to 'Back to All Users', users_path, class: 'btn btn-primary' %><br/>
+<h1><%= @user.name %></h1>
+<hr/>
+<div class="col-md-8">
+  <p>
+    <strong class="uline">Member Since:</strong><br/>
+    <%= @user.created_at.strftime("%B %d, %Y") %>
+    <br/><br/>
+    <strong class="uline">Membership Level:</strong><br/>
+    <%= @user.level.upcase %>
+    <% if @user == current_user && @user.level == "basic" %>
+      <br/><br/>
+      <%= link_to 'Upgrade to Premium', edit_user_registration_path, class: 'btn btn-primary' %>
+    <% end %>
+  </p>
+  <br/> 
+  <% if @user == current_user || current_user.level?(:admin) %>
+    <p>
+      <strong class="uline">Email:</strong><br/> 
+      <%= @user.email if @user.email %>
+    </p>
+    <% if current_user.level?(:premium) || current_user.level?(:admin) %>
+      <br/>
+      <strong class="uline">Owned wikis:</strong><br/>
+      <% @user.owned_wikis.each do |w| %>
+        <%= link_to (markdown w.title), w %>
+      <% end %>
+      <br/>
+      <strong class="uline">Collaborations:</strong><br/>
+      <% @user.wikis.each do |w| %>
+        <%= link_to (markdown w.title), w %>
+      <% end %>
+    <% end %>
   <% end %>
-  <br/><br/>
-  <p>Wikis:</p>
-  <% @user.wikis.each do |w| %>
-    <%= link_to w.title, w %><br/>
+</div>
+<div class="col-md-4"> 
+  <% if @user == current_user %>
+    <%= link_to 'Edit account', edit_user_registration_path, class: 'btn btn-primary' %>
   <% end %>
-<% end %>
+</div>

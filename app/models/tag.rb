@@ -1,6 +1,6 @@
 class Tag < ActiveRecord::Base
   before_destroy :terminator
-  #after_save :cull  # this obliterates itself as an after-save callback
+  before_save :cull 
   has_and_belongs_to_many :wikis, join_table: :wikis_tags
 
   validates :tag, uniqueness: true 
@@ -13,16 +13,15 @@ class Tag < ActiveRecord::Base
       false
     end
   end
-    
-  # TO DO: rewrite as a rake task  
-  # def cull   
-  #   # search for and cull random empty tags from collection upon a tag.save event 
-  #   # written so as to run periodically without a cron event; rewrite as rake task
-  #   Tag.all.each do |t|
-  #     if t.wikis.count == 0 
-  #       t.destroy
-  #     end
-  #   end
-  # end
+      
+  def cull   
+    # search for and cull orphaned tags from collection upon a tag.save event 
+    # written so as to be triggered periodically without a cron event
+    Tag.all.each do |t|
+      if t.wikis.count == 0 
+        t.destroy
+      end
+    end
+  end
 
 end

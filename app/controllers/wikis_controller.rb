@@ -2,9 +2,7 @@ class WikisController < ApplicationController
 
   def index
     current_user ? @wikis = current_user.visible_wikis : @wikis = Wiki.where(private: false) 
-    @tags = []
-    @wikis.each { |w| w.grab_tags(@tags) }
-    @tags = @tags.uniq
+    @tags = visible_tags(@wikis)
     authorize @wikis
   end
 
@@ -19,6 +17,10 @@ class WikisController < ApplicationController
     @wiki.collaborations.build
     @tag = Tag.new
     authorize @wiki
+
+    # visibility scoping within the form select box for displaying a collection of Tags
+    @wikiz = current_user.visible_wikis
+    @tagz = visible_tags(@wikiz)
   end
 
   def create 
@@ -42,22 +44,26 @@ class WikisController < ApplicationController
     @tags = @wiki.tags
     @tag = Tag.new
     authorize @wiki
+
+    # visibility scoping within the form select box for displaying a collection of Tags
+    @wikiz = current_user.visible_wikis
+    @tagz = visible_tags(@wikiz)
   end
 
   def update
     @wiki = Wiki.find(params[:id])
     @tags = Tag.where(:id => params[:tags])
-    @tag_count = Tag.all.count 
 
     authorize @wiki
-    if @wiki.update_attributes(wiki_params)
+    if @wiki.update_attributes(wiki_params)  
       #newly written tags are created after the save but before the following destroy_all
       #if a new custom tag was created, manually add it to the @tags array
-      @new_tag_count = Tag.all.count
-      if @new_tag_count > @tag_count
-        @tag = Tag.last  
-        @tags << @tag
-      end
+      if wiki_params[:tags_attributes]
+        if wiki_params[:tags_attributes]["0"][:tag] != ""    # nesting for Rspec
+          @tag = Tag.last  
+          @tags << @tag
+        end
+      end   
       @wiki.tags.destroy_all #only disassociate previous tags if the wiki form contains no errors
       @wiki.tags << @tags  # associate the selected tags to the wiki and create records in the join table.
 
@@ -92,6 +98,12 @@ class WikisController < ApplicationController
   # `tags_attributes` is necessary for the creation of a tag through a wiki form, but not the association of a user
   def wiki_params
     params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag], collaborations_attributes: [:id, :user_id, :_destroy])
+  end
+
+  def visible_tags(wiki_collection)
+    tags = []
+    wiki_collection.each { |w| w.grab_tags(tags) }
+    tags = tags.uniq
   end
 
 end

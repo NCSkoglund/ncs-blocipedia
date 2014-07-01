@@ -4,4 +4,5 @@ NcsBlocipedia::Application.routes.draw do
   resources :users, only: [:index, :show]
   resources :wikis
   resources :tags, only: [:index, :show]
+  resources :charges, only: [:create]
 end

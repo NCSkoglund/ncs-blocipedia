@@ -1,23 +1,27 @@
-<h1>Tags#index</h1>
+<h1>All Tags</h1>
+<hr/>
 <div class="col-md-8">
   <% @tags.each do |tag| %>
     <% if tag.wikis.count > 0 %>
       <div class="media">
         <div class="media-body">
-          <strong>
-            <%= link_to tag.tag, tag %>
-          </strong><br/>
-          <small>
-            <em>Total Wikicount: <%= tag.wikis.count %></em><br/>
-            <% tag.wikis.each do |wiki| %>
-              <% if wiki.is_wiki_viewable?(current_user) %>
-                <%= link_to wiki.title, wiki %>
-                Private?  <%= wiki.private %><br/>
+          <h4 class="media-heading">
+            <%= link_to tag.tag, tag, class: "uline" %>
+          </h4>
+          <p>
+            <ul>
+              <% tag.wikis.each do |wiki| %>
+                <% if wiki.is_wiki_viewable?(current_user) %>
+                  <li>
+                    <%= link_to (markdown wiki.title), wiki %>
+                  </li>
+                <% end %>
               <% end %>
-            <% end %>
-          </small>
+            </ul>
+          </p>
         </div>
       </div>
     <% end %>
+    <hr/>
   <% end %>
 </div>

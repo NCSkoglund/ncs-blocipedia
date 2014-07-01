@@ -1,7 +1,5 @@
 <%# add navigation links to this file %>
 <% if user_signed_in? %>
-
-  <li style="color:#fff;"><%= Time.current %></li><br/>
   
   <% if Time.current.seconds_since_midnight > 64800 %> <!-- after 6pm -->
     <li><%= link_to "Good evening #{current_user.name}!", current_user %></li>

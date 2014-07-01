@@ -7,8 +7,8 @@ describe TagsController do
     @user = FactoryGirl.create(:user)
     sign_in @user
 
-    @tag = FactoryGirl.create(:tag)
     @wiki = FactoryGirl.create(:wiki)
+    @tag = FactoryGirl.create(:tag)
     @wiki.tags << @tag
 
     @private_wiki = FactoryGirl.create(:wiki, private: true)
@@ -34,8 +34,8 @@ describe TagsController do
     end
     
     it "populates an array of tags" do
-      # given a basic user, returns in opposite order so needs reverse to create match
-      assigns(:tags).should eq(@wiki.tags.reverse.to_a)
+      # given a basic user
+      assigns(:tags).should eq(@wiki.tags)
     end
   end
 

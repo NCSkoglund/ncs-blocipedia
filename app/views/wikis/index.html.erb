@@ -1,32 +1,35 @@
-<div class="col-md-8">
-  <h1>Wikis#Index</h1>
-  <% if policy(@wikis).create? %>
-    <%= link_to 'Wikis#New', new_wiki_path, class: 'btn btn-primary' %>
-  <% end %>
+<h1>All Wikis</h1>
+<hr/>
+<div class="col-md-8">  
   <% @wikis.each do |wiki| %>
     <div class="media">
       <div class="media-body">
         <h4 class="media-heading">
-          <%= link_to wiki.title, wiki %>
+          <%= link_to (markdown wiki.title), wiki %>
         </h4>
         <p>
-          Private?  <%= wiki.private %>
+          <%= wiki.description %>
         </p>
         <small>
           <% wiki.tags.each do |t| %>
-            <%= link_to t.tag, t %>
+            <%= link_to t.tag, t, class: 'pr' %>
           <% end %>
         </small>
       </div>
     </div>
+    <hr/>
   <% end %>
 </div>
-
 <div class="col-md-4">
-  <p>Accessible tags:</p>
+  <% if policy(@wikis).create? %>
+    <%= link_to 'Create a New Wiki', new_wiki_path, class: 'btn btn-primary' %>
+    <br/>
+    <br/>
+  <% end %>
+  <h5 class="uline">Associated tags:</h5>
   <small>
     <% @tags.uniq.each do |t| %>
-      <%= link_to t.tag, t %> Wikicount: <%= t.wikis.count %><br/>
+      <%= link_to t.tag, t %><br/>
     <% end %>
   </small>
 </div>
