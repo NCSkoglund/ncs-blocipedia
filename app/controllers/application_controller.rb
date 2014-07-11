@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
   end
 
   def not_found
-    render text: "404 Not Found", status: 404
+    render file: 'public/404.html'
   end
   
   # redirect after devise login
