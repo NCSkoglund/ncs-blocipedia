@@ -1,6 +1,7 @@
 <h1>All Wikis</h1>
 <hr/>
-<div class="col-md-8">  
+<div class="col-md-8"> 
+  <%= will_paginate @wikis %> 
   <% @wikis.each do |wiki| %>
     <div class="media">
       <div class="media-body">
@@ -19,6 +20,7 @@
     </div>
     <hr/>
   <% end %>
+  <%= will_paginate @wikis %>
 </div>
 <div class="col-md-4">
   <% if policy(@wikis).create? %>
