@@ -41,11 +41,12 @@
       </div>
     <% end %> 
     <hr/>
-    <div class="form-group">
-      <%= f.label "Select One or More Tags" %><br/>
-      <%= select_tag :tags, options_from_collection_for_select(Tag.all, 'id', 'tag', @wiki.tags.map{ |j| j.id }), :multiple => true %>
-      <%# select_tag :tags, options_from_collection_for_select(@tagz.sort_by { |tag| tag.tag.downcase }, 'id', 'tag', @wiki.tags.map{ |j| j.id } ), :multiple => true %>
-    </div>
+    <% if @tagz && @tagz.count > 0 %>
+      <div class="form-group">
+        <%= f.label "Select One or More Tags" %><br/>
+        <%= select_tag :tags, options_from_collection_for_select(@tagz.sort_by { |tag| tag.tag.downcase }, 'id', 'tag', @wiki.tags.map{ |j| j.id } ), :multiple => true %>
+      </div>
+    <% end %>
     <%= f.fields_for :tags, @tag do |tags_form| %>
       <%= tags_form.label "Add a New Tag" %><br/>
       <%= tags_form.text_field :tag %>

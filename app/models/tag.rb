@@ -5,6 +5,8 @@ class Tag < ActiveRecord::Base
 
   validates :tag, uniqueness: true 
   
+ # scope :begins_with, lambda { |letter| where("tag", start_with?(letter)) }
+
   private
 
   def terminator

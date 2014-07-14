@@ -14,6 +14,8 @@ class User < ActiveRecord::Base
   
   validates :name, presence: true
 
+  scope :privileged, where(level: ['premium', 'admin'])
+
   def level?(base_level)
     level == base_level.to_s
   end

@@ -1,27 +1,22 @@
 <h1>All Tags</h1>
 <hr/>
 <div class="col-md-8">
+ 
+  <%# @alpha.each do |letter| %>
+  
+  <%# @tags.begins_with(letter) do |tag| %>
   <% @tags.each do |tag| %>
     <% if tag.wikis.count > 0 %>
-      <div class="media">
-        <div class="media-body">
-          <h4 class="media-heading">
-            <%= link_to tag.tag, tag, class: "uline" %>
-          </h4>
-          <p>
-            <ul>
-              <% tag.wikis.each do |wiki| %>
-                <% if wiki.is_wiki_viewable?(current_user) %>
-                  <li>
-                    <%= link_to (markdown wiki.title), wiki %>
-                  </li>
-                <% end %>
-              <% end %>
-            </ul>
-          </p>
-        </div>
+      <div class="media-body">
+        <h5 class="media-heading">
+          <%= link_to tag.tag, tag, class: "uline" %>
+          <%# tag.wikis.count %>
+        </h5>
       </div>
     <% end %>
     <hr/>
+  <%# end %>
+
   <% end %>
+
 </div>
