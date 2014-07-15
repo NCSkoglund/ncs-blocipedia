@@ -2,9 +2,8 @@ class WikisController < ApplicationController
 
   def index
     current_user ? @wikis = current_user.visible_wikis : @wikis = Wiki.where(private: false) 
-    @tags = visible_tags(@wikis)
-    # perform pagination after setting tags
-   # @wikis = @wikis.paginate(page: params[:page], per_page: 10)
+    @tags = visible_tags(@wikis).sort_by { |t| t.tag.downcase }
+    @wikis = @wikis.paginate(page: params[:page], per_page: 10)
     authorize @wikis
   end
 
@@ -97,14 +96,16 @@ class WikisController < ApplicationController
   end
 
   private
-  # `tags_attributes` is necessary for the creation of a tag through a wiki form, but not the association of a user
+  
   def wiki_params
     params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag], collaborations_attributes: [:id, :user_id, :_destroy])
   end
 
   def visible_tags(wiki_collection)
     tags = []
-    wiki_collection.each { |w| w.grab_tags(tags) }
+    wiki_collection.each  do |w| 
+      w.grab_tags(tags) 
+    end
     tags = tags.uniq
   end
 

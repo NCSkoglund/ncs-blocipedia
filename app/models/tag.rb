@@ -4,8 +4,6 @@ class Tag < ActiveRecord::Base
   has_and_belongs_to_many :wikis, join_table: :wikis_tags
 
   validates :tag, uniqueness: true 
-  
- # scope :begins_with, lambda { |letter| where("tag", start_with?(letter)) }
 
   private
 

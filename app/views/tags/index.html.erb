@@ -1,22 +1,11 @@
 <h1>All Tags</h1>
-<hr/>
+<hr/>  
 <div class="col-md-8">
- 
-  <%# @alpha.each do |letter| %>
-  
-  <%# @tags.begins_with(letter) do |tag| %>
-  <% @tags.each do |tag| %>
-    <% if tag.wikis.count > 0 %>
-      <div class="media-body">
-        <h5 class="media-heading">
-          <%= link_to tag.tag, tag, class: "uline" %>
-          <%# tag.wikis.count %>
-        </h5>
-      </div>
+  <% @tags.each do |t| %>
+    <% t[1].each do |tag| %>
+      <%= link_to tag.tag, tag, class: 'uline' %>
+      <br/>   
     <% end %>
-    <hr/>
-  <%# end %>
-
+    <hr/> 
   <% end %>
-
 </div>

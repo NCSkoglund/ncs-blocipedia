@@ -11,7 +11,7 @@ class Wiki < ActiveRecord::Base
   accepts_nested_attributes_for :tags, :reject_if => proc { |a| a['tag'].blank? }
 
   default_scope { order('title DESC') }
-  
+
   validates :title, presence: true, format: { with: /\s*\S.{3,}\S\s*/, message: "title must contain at least five valid characters" }
   validates :body, length: { minimum: 20 }, presence: true
   validates :private, inclusion: { in: [true, false] }

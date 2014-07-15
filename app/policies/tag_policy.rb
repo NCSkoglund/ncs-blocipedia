@@ -6,11 +6,9 @@ class TagPolicy < ApplicationPolicy
   end
 
   def show? 
-    user ? @wikis = user.visible_wikis : @wikis = Wiki.where(private: false) 
-    @tags = []
-    @wikis.each { |w| w.grab_tags(@tags) }
-    @tags = @tags.uniq
-
+    
+    # TO DO: still  needs collaborator tags added to query...
+    @tags = Tag.joins(:wikis).where("wikis.private=false OR wikis.owner_id=?", user)
     @tags.include?(record) ? true : false
   end
 

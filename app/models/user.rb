@@ -14,27 +14,21 @@ class User < ActiveRecord::Base
   
   validates :name, presence: true
 
-  scope :privileged, where(level: ['premium', 'admin'])
+  scope :privileged, -> { where(level: ['premium', 'admin']) }
 
   def level?(base_level)
     level == base_level.to_s
   end
 
   def visible_wikis
-    visible_wikis = [] 
     if level?(:admin)
-      visible_wikis = Wiki.all
+      Wiki.all
     elsif level?(:premium) 
-      public_array = Wiki.where(private: false) 
-      owned_array = self.owned_wikis.to_a 
-      collaborator_array = self.wikis.to_a
-      
-      visible_wikis = public_array.concat(owned_array).concat(collaborator_array)  
-      visible_wikis = visible_wikis.uniq
+      Wiki.includes(:collaborations).where("private=false OR owner_id=? OR collaborations.user_id=?",
+         self.id, self.id).references(:collaborations)
     else
-      visible_wikis = Wiki.where(private: false)
+      Wiki.where(private: false)
     end
-    visible_wikis # this works incorrectly if not explicitly returned
   end
 
   private 
