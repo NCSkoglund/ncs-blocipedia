@@ -55,9 +55,17 @@ describe User do
     user_with_duplicate_email.should_not be_valid
   end
 
-  it "should require a membership level" do
-    no_level_user = User.new(@attr.merge(:level => ""))
-    no_level_user.should_not be_valid 
+  it "should automatically set a user's membership level to basic" do
+    @attr2 = {
+      :name => "Example User",
+      :email => "user@example.com",
+      :password => "changeme",
+      :password_confirmation => "changeme",
+      :level => ""
+    }
+    no_level_user = User.new(@attr2)
+    no_level_user.save
+    no_level_user.level.should eq("basic")
   end
 
   it "should recognize a user's membership level" do 

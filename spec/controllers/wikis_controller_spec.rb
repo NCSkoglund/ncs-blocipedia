@@ -23,7 +23,8 @@ describe WikisController do
     end
 
     it "populates an array of wikis" do
-      assigns(:wikis).should eq(@user.visible_wikis)
+      # to_a overrides paginate
+      assigns(:wikis).to_a.should eq(@user.visible_wikis.to_a)
     end
     
     it "populates an array of tags" do
@@ -62,12 +63,8 @@ describe WikisController do
         get 'show', :id => 0
       end
 
-      it "has 404 status when wiki_id is not found" do
-        response.status.should eq(404)
-      end 
-
-      it "renders 404 message when wiki_id is not found" do 
-        response.body.should eq("404 Not Found")
+      it "renders public/404.html" do
+        response.should render_template(:file => "#{Rails.root}/public/404.html")
       end
     end  
 
@@ -373,8 +370,9 @@ describe WikisController do
     context "as a basic user" do
 
       it "populates an array of wikis that are visible to the current user" do
+        # to_a overrides paginate
         get :index
-        assigns(:wikis).should eq(@user.visible_wikis)
+        assigns(:wikis).to_a.should eq(@user.visible_wikis.to_a)
       end
 
       it "does not include private wikis" do
@@ -452,8 +450,9 @@ describe WikisController do
       end
 
       it "populates an array of wikis that are visible to the current user" do
+        # to_a overrides paginate
         get :index
-        assigns(:wikis).should eq(@user.visible_wikis)
+        assigns(:wikis).to_a.should eq(@user.visible_wikis.to_a)
       end
 
       it "includes collaborative private wikis" do
@@ -526,8 +525,9 @@ describe WikisController do
       end
 
       it "populates an array of wikis with all Wikis" do
+        # to_a overrides paginate
         get :index
-        assigns(:wikis).should eq(Wiki.all)
+        assigns(:wikis).to_a.should eq(Wiki.all.to_a)
       end
 
       it "can view a public wiki" do
@@ -588,8 +588,9 @@ describe WikisController do
       end
 
       it "can see an index of wikis that are set to private: false" do
+        # to_a overrides paginate
         get :index
-        assigns(:wikis).should eq(Wiki.all.where(private: false))
+        assigns(:wikis).to_a.should eq(Wiki.all.where(private: false).to_a)
       end
 
       it "can view a public wiki" do

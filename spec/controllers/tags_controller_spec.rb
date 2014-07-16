@@ -35,7 +35,20 @@ describe TagsController do
     
     it "populates an array of tags" do
       # given a basic user
-      assigns(:tags).should eq(@wiki.tags)
+      assigns(:tags)["t"].should eq(@wiki.tags)
+    end
+
+    it "groups tags by first letter" do
+      @tag1 = @wiki.tags.first 
+      @tag2 = @wiki.tags.last
+      @wiki.tags.count.should eq(2)
+
+      @tag_n = FactoryGirl.create(:tag, tag: "nosferatu")
+      @wiki.tags << @tag_n
+
+      get :index
+      assigns(:tags)["t"].should eq([@tag1, @tag2])
+      assigns(:tags)["n"].should eq([@tag_n])
     end
   end
 
@@ -64,12 +77,8 @@ describe TagsController do
         get 'show', :id => 0
       end
 
-      it "has 404 status when wiki_id is not found" do
-        response.status.should eq(404)
-      end 
-
-      it "renders 404 message when wiki_id is not found" do 
-        response.body.should eq("404 Not Found")
+      it "renders public/404.html" do
+        response.should render_template(:file => "#{Rails.root}/public/404.html")
       end
     end     
   end
@@ -80,7 +89,7 @@ describe TagsController do
 
       it "can see an index of tags that belong to public wikis" do
         get :index
-        assigns(:tags).should include(@tag)
+        assigns(:tags)["t"].should include(@tag)
       end
 
       it "cannot see an index of tags that belong to private wikis" do
@@ -91,7 +100,7 @@ describe TagsController do
       it "can show a tag but differentiate between the privacy of its associated wikis" do 
         @private_wiki.tags << @tag
         get :index
-        assigns(:tags).should include(@tag)
+        assigns(:tags)["t"].should include(@tag)
         assigns(:wikis).should_not include(@private_wiki)      
       end
 
@@ -116,12 +125,12 @@ describe TagsController do
 
       it "can see an index of tags that belong to public wikis" do
         get :index
-        assigns(:tags).should include(@tag)
+        assigns(:tags)["t"].should include(@tag)
       end
 
       it "can see an index of tags that belong to collaborative private wikis" do
         get :index
-        assigns(:tags).should include(@private_tag2)
+        assigns(:tags)["t"].should include(@private_tag2)
       end
 
       it "cannot see an index of tags that belong to non-collaborative private wikis " do
@@ -132,7 +141,7 @@ describe TagsController do
       it "can show a tag but differentiate between the privacy of its associated wikis" do 
         @private_wiki.tags << @tag
         get :index
-        assigns(:tags).should include(@tag)
+        assigns(:tags)["t"].should include(@tag)
         assigns(:wikis).should_not include(@private_wiki)      
       end
 
@@ -208,7 +217,7 @@ describe TagsController do
       
       it "can see an index of tags that belong to public wikis" do
         get :index
-        assigns(:tags).should include(@tag)
+        assigns(:tags)["t"].should include(@tag)
       end
 
       it "cannot see an index of tags that belong to collaborative private wikis" do
@@ -224,7 +233,7 @@ describe TagsController do
       it "can show a tag but differentiate between the privacy of its associated wikis" do 
         @private_wiki.tags << @tag
         get :index
-        assigns(:tags).should include(@tag)
+        assigns(:tags)["t"].should include(@tag)
         assigns(:wikis).should_not include(@private_wiki)      
       end
 

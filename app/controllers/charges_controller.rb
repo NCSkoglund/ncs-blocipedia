@@ -1,13 +1,5 @@
 class ChargesController < ApplicationController
 
-  # def new
-  #   @stripe_btn_data = {
-  #     key: "#{ Rails.configuration.stripe[:publishable_key] }",
-  #     description: "Premium Membership - #{current_user.name}",
-  #     amount: 1_00   # in pennies
-  #   }
-  # end
-
   def create
     @amount = params[:amount]
 
