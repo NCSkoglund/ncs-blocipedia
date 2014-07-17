@@ -10,11 +10,19 @@ class User < ActiveRecord::Base
   has_many :owned_wikis, foreign_key: "owner_id", class_name: "Wiki"
   
   has_many :collaborations
-  has_many :wikis, :through => :collaborations
+  has_many :wikis, :through => :collaborations, :uniq => true
   
   validates :name, presence: true
 
   scope :privileged, -> { where(level: ['premium', 'admin']) }
+  
+  # for Wiki collaborator scoping
+  def self.exclude_list(user_param, wiki_param)
+    exclude_ids = wiki_param.users.map {|a| a.id }
+    exclude_ids << user_param.id
+    @user_list = User.privileged.reject { |a| exclude_ids.include?(a.id)}
+    @user_list    
+  end
 
   def level?(base_level)
     level == base_level.to_s

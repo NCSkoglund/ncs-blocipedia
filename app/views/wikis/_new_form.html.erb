@@ -1,0 +1,59 @@
+<h3>New form</h3>
+<div class="col-md-8">
+  <%= form_for @wiki do |f|%>  
+    <% if @wiki.errors.any? %>
+      <div class="alert alert-danger">
+        <h4>There 
+          <%= @wiki.errors.count == 1 ? 'is' : 'are' %>
+          <%= pluralize(@wiki.errors.count, "error") %>.
+        </h4>
+        <ul>
+          <% @wiki.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: 'form-control', placeholder: "Enter wiki name" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :description %>
+      <%= f.text_area :description, rows: 8, class: 'form-control', placeholder: "Enter wiki description" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :body %>
+      <%= f.text_area :body, rows: 8, class: 'form-control', placeholder: "Enter wiki body text" %>
+    </div>
+    <% if User.privileged.include?(current_user) %>
+      <div class="form-group">
+        <%= f.label :private, class: 'checkbox pl' do %>
+          <%= f.check_box :private, id: 'private_field' %> Private Wiki 
+        <% end %>
+      </div>
+      <div class="form-group js-new-user js-hide">
+        <% if @wiki.users.count > 0 %>
+          <%= f.fields_for :collaborations do |builder| %>
+            <%= render partial: 'collaboration_fields', locals: { builder: builder } %>
+          <% end %>
+        <% end %>
+        <%= link_to_add_fields "Add a Collaborator", f , :collaborations %>
+      </div>
+    <% end %> 
+    <hr/>
+    <% if @tagz && @tagz.count > 0 %>
+      <div class="form-group">
+        <%= f.label "Select One or More Tags" %><br/>
+        <%= select_tag :tags, options_from_collection_for_select(@tagz.sort_by { |tag| tag.tag.downcase }, 'id', 'tag', @wiki.tags.map{ |j| j.id } ), :multiple => true %>
+      </div>
+    <% end %>
+    <%= f.fields_for :tags, @tag do |tags_form| %>
+      <%= tags_form.label "Add a New Tag" %><br/>
+      <%= tags_form.text_field :tag %>
+    <% end %> 
+    <br/><br/>
+    <hr/>
+    <%= f.submit "Save", class: 'btn btn-success' %>
+  <% end %>
+</div>

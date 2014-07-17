@@ -4,7 +4,7 @@ class Wiki < ActiveRecord::Base
   belongs_to :owner, class_name: "User"   #declare alias 'owner', keep separate from 'users'
 
   has_many :collaborations
-  has_many :users, :through => :collaborations
+  has_many :users, :through => :collaborations, :uniq => true
   accepts_nested_attributes_for :collaborations, allow_destroy: true
   
   has_and_belongs_to_many :tags,  join_table: :wikis_tags

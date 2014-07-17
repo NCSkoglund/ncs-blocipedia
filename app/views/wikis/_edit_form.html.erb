@@ -1,3 +1,4 @@
+<h3>Edit form</h3>
 <div class="col-md-8">
   <%= form_for @wiki do |f|%>  
     <% if @wiki.errors.any? %>
@@ -25,20 +26,27 @@
       <%= f.label :body %>
       <%= f.text_area :body, rows: 8, class: 'form-control', placeholder: "Enter wiki body text" %>
     </div>
-    <% if current_user.level?('premium') || current_user.level?(:admin) %>
-      <div class="form-group">
-        <%= f.label :private, class: 'checkbox pl' do %>
-          <%= f.check_box :private, id: 'private_field' %> Private Wiki 
-        <% end %>
-      </div>
-      <div class="form-group js-new-user js-hide">
-        <% if @wiki.users.count > 0 %>
-          <%= f.fields_for :collaborations do |builder| %>
-            <%= render partial: 'collaboration_fields', locals: { builder: builder } %>
+    <% if @wiki.private == false %>
+      <p>This wiki is publicly viewable</p>
+    <% elsif User.privileged.include?(current_user) %>
+      <% if @wiki.owner == current_user  %>
+        <small><em>You are the wiki owner, <%= @wiki.owner.name %>.</em></small>
+        <div class="form-group">
+          <br/>
+          <% if @wiki.users.count > 0 %>
+          <strong class="uline">Current Collaborators:</strong>
+            <%= f.fields_for :collaborations do |builder| %>
+              <%= render partial: 'edit_collaboration_fields', locals: { builder: builder } %>
+            <% end %>
           <% end %>
-        <% end %>
-        <%= link_to_add_fields "Add a Collaborator", f , :collaborations %>
-      </div>
+          <% if User.exclude_list(current_user, @wiki).count > 0 %>
+            <hr/>
+            <%= link_to_add_fields "Add a Collaborator", f , :collaborations %>
+          <% end %>
+        </div>
+      <% else %>
+        <p>'<%= @wiki.owner.name %>' has permissions to manage collaborators </p>
+      <% end %>
     <% end %> 
     <hr/>
     <% if @tagz && @tagz.count > 0 %>

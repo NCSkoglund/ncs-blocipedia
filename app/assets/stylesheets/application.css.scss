@@ -13,38 +13,3 @@
  *= require_tree .
  *= require_self
  */
-
-main {
- background-color: #fff;
- margin-top: 0;
-}
-
-.col-md-8 {
- border-right: 1px solid #ddd;
-}
-
-footer {
-  text-align: center;
-  padding-bottom:20px;
-}
-
-.uline {
-  text-decoration: underline;
-}
-
-.pl {
-  padding-left:20px;
-}
-
-.pr {
-  padding-right: 10px;
-}
-
-#index_heading {
-  border-bottom: 40px solid #000;
-}
-
-#index_heading_2 {
-  border-bottom: 360px solid #000;
-  padding-bottom: 10px;
-}

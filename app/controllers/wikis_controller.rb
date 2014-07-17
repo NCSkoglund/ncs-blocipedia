@@ -56,7 +56,9 @@ class WikisController < ApplicationController
     @tags = Tag.where(:id => params[:tags])
 
     authorize @wiki
-    if @wiki.update_attributes(wiki_params)  
+    puts "!!!!!!!!!!#{wiki_params.to_yaml}"
+    if @wiki.update_attributes(wiki_params)
+
       #newly written tags are created after the save but before the following destroy_all
       #if a new custom tag was created, manually add it to the @tags array
       if wiki_params[:tags_attributes]
