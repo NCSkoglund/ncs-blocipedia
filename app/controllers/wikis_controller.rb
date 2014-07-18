@@ -56,7 +56,6 @@ class WikisController < ApplicationController
     @tags = Tag.where(:id => params[:tags])
 
     authorize @wiki
-    puts "!!!!!!!!!!#{wiki_params.to_yaml}"
     if @wiki.update_attributes(wiki_params)
 
       #newly written tags are created after the save but before the following destroy_all
