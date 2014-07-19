@@ -38,5 +38,17 @@ class ApplicationPolicy
     # scope for guest users
     Pundit.policy_scope!(user, record.class)
   end
+
+  def scope_helper(current_user, record)
+    if record.private == false
+      true
+    elsif user.level?(:admin)
+      true
+    elsif user.level?(:premium) && (record.users.include?(user) || record.owner == user)
+      true
+    else
+      false
+    end
+  end
 end
 

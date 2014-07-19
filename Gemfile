@@ -19,10 +19,13 @@ gem 'stripe'
 gem 'redcarpet'
 gem 'will_paginate', '~> 3.0'
 gem 'rails_12factor', group: :production
+gem 'sunspot_rails'
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_19, :mri_20, :mri_21, :rbx]
   gem 'rails_layout'
+  gem 'sunspot_solr'
 end
 group :development, :test do
   gem 'factory_girl_rails'

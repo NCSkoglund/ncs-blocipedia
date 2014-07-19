@@ -84,3 +84,7 @@ pickle-email-*.html
 
 # Carrierwave image
 public/uploads
+
+* Ignore Sunspot
+config/sunspot.yml
+solr/

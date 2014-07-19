@@ -1,15 +1,21 @@
 class WikisController < ApplicationController
 
   def index
-    current_user ? @wikis = current_user.visible_wikis : @wikis = Wiki.where(private: false) 
-    @tags = visible_tags(@wikis).sort_by { |t| t.tag.downcase }
-    @wikis = @wikis.paginate(page: params[:page], per_page: 10)
-    authorize @wikis
+    @wikis_array = policy_scope(Wiki)
+    authorize @wikis_array
+
+    @wikis = Wiki.search do 
+      fulltext params[:search]
+      with(:id, policy_scope(Wiki).map {|a| a.id })
+      paginate :page => params[:page], :per_page => 5
+    end.results
+  
+    @tags = policy_scope(Tag).sort_by { |t| t.tag.downcase }
   end
 
   def show
     @wiki = Wiki.find(params[:id])
-    @tags = @wiki.tags
+    @tags = @wiki.tags.sort_by { |t| t.tag.downcase }
     authorize @wiki
   end
 
@@ -20,8 +26,7 @@ class WikisController < ApplicationController
     authorize @wiki
 
     # visibility scoping within the form select box for displaying a collection of Tags
-    @wikiz = current_user.visible_wikis
-    @tagz = visible_tags(@wikiz)
+    @tagz = policy_scope(Tag).sort_by { |t| t.tag.downcase }
   end
 
   def create 
@@ -46,9 +51,8 @@ class WikisController < ApplicationController
     @tag = Tag.new
     authorize @wiki
 
-    # visibility scoping within the form select box for displaying a collection of Tags
-    @wikiz = current_user.visible_wikis
-    @tagz = visible_tags(@wikiz)
+    # visibility scoping within the form select box for visible Tags
+    @tagz = policy_scope(Tag).sort_by { |t| t.tag.downcase }
   end
 
   def update
@@ -100,14 +104,6 @@ class WikisController < ApplicationController
   
   def wiki_params
     params.require(:wiki).permit(:title, :description, :body, :private, tags_attributes: [:id, :tag], collaborations_attributes: [:id, :user_id, :_destroy])
-  end
-
-  def visible_tags(wiki_collection)
-    tags = []
-    wiki_collection.each  do |w| 
-      w.grab_tags(tags) 
-    end
-    tags = tags.uniq
   end
 
 end

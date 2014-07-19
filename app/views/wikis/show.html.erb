@@ -15,7 +15,7 @@
     <small><em>This wiki has not been tagged</em></small>
   <% else %>
     <% @tags.each do |x| %>
-      <%= link_to x.tag, x, class: 'pr' %>
+      <%= link_to x.tag, x, class: 'pr' %><br/>
     <% end %>
   <% end %>
   <br/>

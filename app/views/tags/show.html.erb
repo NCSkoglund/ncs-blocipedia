@@ -7,10 +7,7 @@
   <br/>
   <ul>
     <% @wikis.each do |wiki| %>
-      <% if wiki.is_wiki_viewable?(current_user) %>
-        <li><%= link_to (markdown wiki.title), wiki %>
-        </li>
-      <% end %>
+      <li><%= link_to (markdown wiki.title), wiki %></li>
     <% end %>
   </ul>
 </div>
