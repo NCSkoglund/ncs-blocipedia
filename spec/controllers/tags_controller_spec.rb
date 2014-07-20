@@ -97,13 +97,6 @@ describe TagsController do
         assigns(:tags).should_not include(@private_tag)
       end
 
-      it "can show a tag but differentiate between the privacy of its associated wikis" do 
-        @private_wiki.tags << @tag
-        get :index
-        assigns(:tags)["t"].should include(@tag)
-        assigns(:wikis).should_not include(@private_wiki)      
-      end
-
       it "can navigate to the show page of a tag that belongs to a public wiki" do 
         get :show, id: @tag.id
         response.should be_success
@@ -141,8 +134,7 @@ describe TagsController do
       it "can show a tag but differentiate between the privacy of its associated wikis" do 
         @private_wiki.tags << @tag
         get :index
-        assigns(:tags)["t"].should include(@tag)
-        assigns(:wikis).should_not include(@private_wiki)      
+        assigns(:tags)["t"].should include(@tag)     
       end
 
       it "can navigate to the show page of a tag that belongs to a public wiki" do
@@ -169,26 +161,9 @@ describe TagsController do
         @private_wiki2.users << @user
       end 
 
-      it "can see an index of tags that belong to public wikis" do
+      it "can see an index of all tags" do
         get :index
-        assigns(:tags).should include(@tag)
-      end
-
-      it "can see an index of tags that belong to collaborative private wikis" do
-        get :index
-        assigns(:tags).should include(@private_tag2)
-      end
-
-      it "can see an index of tags that belong to non-collaborative private wikis " do
-        get :index
-        assigns(:tags).should include(@private_tag)
-      end
-
-      it "can show a tag and all associated wikis regardless of privacy" do 
-        @private_wiki.tags << @tag
-        get :index
-        assigns(:tags).should include(@tag)
-        assigns(:wikis).should include(@private_wiki)      
+        expect(assigns(:tags)["t"]).to eq(Tag.all)
       end
       
       it "can navigate to the show page of a tag that belongs to a public wiki" do
@@ -228,13 +203,6 @@ describe TagsController do
       it "cannot see an index of tags that belong to non-collaborative private wikis " do
         get :index
         assigns(:tags).should_not include(@private_tag)
-      end
-
-      it "can show a tag but differentiate between the privacy of its associated wikis" do 
-        @private_wiki.tags << @tag
-        get :index
-        assigns(:tags)["t"].should include(@tag)
-        assigns(:wikis).should_not include(@private_wiki)      
       end
 
       it "can navigate to the show page of a tag that belongs to a public wiki" do

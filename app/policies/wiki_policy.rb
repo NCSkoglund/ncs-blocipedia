@@ -5,10 +5,10 @@ class WikiPolicy < ApplicationPolicy
     def initialize(user, scope)
       @user = user
       @scope = scope
-   end
+    end
 
     def resolve
-      if user && user.level?("admin")
+      if user && user.level?("admin")  
         scope.all 
       elsif user && user.level?("premium")
         # a premium user can see wikis if they are public, they are the owner or they are a collaborator
