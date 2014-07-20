@@ -25,19 +25,27 @@ class WikiPolicy < ApplicationPolicy
   end
 
   def show?
-    if user && user.present?
-      scope_helper(user, record)
-    elsif record.private == false
+    if record.private == false
       true
-    else 
+    elsif user && user.level?(:admin)
+      true
+    elsif user && user.level?(:premium) && (record.users.include?(user) || record.owner == user)
+      true
+    else
       false
     end
   end
 
   def update?
-    if user && user.present?
-      scope_helper(user, record)
-    else 
+    if user.nil?
+      false
+    elsif record.private == false 
+      true
+    elsif user.level?(:admin)
+      true
+    elsif user.level?(:premium) && (record.users.include?(user) || record.owner == user)
+      true
+    else
       false
     end
   end

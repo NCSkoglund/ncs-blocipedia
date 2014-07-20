@@ -1,6 +1,7 @@
 class Collaboration < ActiveRecord::Base
   belongs_to :user
   belongs_to :wiki
+  #validates :user_id, presence: false, uniqueness: { scope: :wiki_id, message: "This is a message" }
   
   after_save :check_redundant
   

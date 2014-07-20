@@ -9,10 +9,11 @@ class TagPolicy < ApplicationPolicy
    end
 
     def resolve
-      if user && user.level?("admin")
+      if user.nil? 
+        scope.includes(:wikis).where("wikis.private='f'").references(:wikis)
+      elsif user.level?("admin")
         scope.all
-      elsif user
-        # a premium user can see tags if they are assciated with a wiki that is public, or that they own or collaborate on
+      elsif user.level?("premium") # a premium user can see tags if they are assciated with a wiki that is public, or that they own or collaborate on
         scope.includes(wikis: :collaborations).where("wikis.private='f' OR wikis.owner_id=? OR collaborations.user_id=?",
           user, user).references(:wikis, :collaborations)
       else
@@ -26,15 +27,16 @@ class TagPolicy < ApplicationPolicy
   end
 
   def show? 
-    if user && user.level?("admin") 
+    if user.nil? 
+      record.wikis.where(private: false).count > 0
+    elsif user.level?("admin") 
       true 
-    # a premium user can see tags if they are assciated with a wiki that is public, or that they own or collaborate on      
-    elsif Tag.includes(wikis: :collaborations).where("wikis.private='f' OR wikis.owner_id=? OR collaborations.user_id=?", 
-            user, user).references(:wikis, :collaborations).
-              include?(record) 
-      true
+    elsif user.level?("premium") # a premium user can see tags if they are assciated with a wiki that is public, or that they own or collaborate on      
+      true if record.wikis.includes(:collaborations).
+                where("private='f' OR owner_id=? or collaborations.user_id=?", user, user).
+                  references(:collaborations).count > 0
     else
-      false
+      true if record.wikis.where("private='f' OR owner_id=?", user).count >0
     end
   end
 end
