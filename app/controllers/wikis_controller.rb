@@ -4,9 +4,13 @@ class WikisController < ApplicationController
     @wikis_array = policy_scope(Wiki)
     authorize @wikis_array
 
+    def pass_instance_var_to_search_block
+      @wikis_array.map(&:id)
+    end
+    
     @wikis = Wiki.search do 
       fulltext params[:search]
-      with(:id, policy_scope(Wiki).map {|a| a.id })
+      with(:id, pass_instance_var_to_search_block)  
       paginate :page => params[:page], :per_page => 5
     end.results
   
