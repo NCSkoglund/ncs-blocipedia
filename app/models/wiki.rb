@@ -17,7 +17,7 @@ class Wiki < ActiveRecord::Base
   validates :private, inclusion: { in: [true, false] }
 
   searchable do 
-    integer :id, multiple: true
+    integer :id
     text :title, :description, :body
     text :tags do 
       tags.map(&:tag)

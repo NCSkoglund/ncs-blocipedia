@@ -28,7 +28,7 @@ class TagPolicy < ApplicationPolicy
 
   def show? 
     if user.nil? 
-      record.wikis.where(private: false).count > 0
+      true if record.wikis.where(private: false).count > 0
     elsif user.level?("admin") 
       true 
     elsif user.level?("premium") # a premium user can see tags if they are assciated with a wiki that is public, or that they own or collaborate on      

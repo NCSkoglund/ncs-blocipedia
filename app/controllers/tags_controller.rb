@@ -7,7 +7,7 @@ class TagsController < ApplicationController
 
   def show
     @tag = Tag.find(params[:id])
-    @wikis = @tag.wikis&policy_scope(Wiki)
+    @wikis = policy_scope(@tag.wikis)
     authorize @tag
   end
 
